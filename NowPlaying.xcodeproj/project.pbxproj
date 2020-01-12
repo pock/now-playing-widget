@@ -7,13 +7,58 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		342D8B7523CB6CF500372129 /* NowPlayingPreferencePane.strings in Resources */ = {isa = PBXBuildFile; fileRef = 342D8B6C23CB6CF500372129 /* NowPlayingPreferencePane.strings */; };
+		342D8B7623CB6CF500372129 /* NowPlayingPreferencePane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342D8B6F23CB6CF500372129 /* NowPlayingPreferencePane.swift */; };
+		342D8B7723CB6CF500372129 /* NowPlayingPreferencePane.xib in Resources */ = {isa = PBXBuildFile; fileRef = 342D8B7123CB6CF500372129 /* NowPlayingPreferencePane.xib */; };
 		34A0227923C6632D00A24DA5 /* NowPlayingWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0227823C6632D00A24DA5 /* NowPlayingWidget.swift */; };
+		34A0228423C66BE200A24DA5 /* NowPlayingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0228023C66BE100A24DA5 /* NowPlayingItem.swift */; };
+		34A0228523C66BE200A24DA5 /* NowPlayingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0228123C66BE100A24DA5 /* NowPlayingView.swift */; };
+		34A0228623C66BE200A24DA5 /* NowPlayingItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0228223C66BE100A24DA5 /* NowPlayingItemView.swift */; };
+		34A0228723C66BE200A24DA5 /* NowPlayingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0228323C66BE100A24DA5 /* NowPlayingHelper.swift */; };
+		34A0228B23C66D5300A24DA5 /* MediaRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34A0228A23C66D5300A24DA5 /* MediaRemote.framework */; };
+		34A0228C23C66D5300A24DA5 /* MediaRemote.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 34A0228A23C66D5300A24DA5 /* MediaRemote.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		34A0228F23C66DF700A24DA5 /* NowPlayingWidgetStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0228E23C66DF700A24DA5 /* NowPlayingWidgetStyle.swift */; };
+		34A0229123C66E1400A24DA5 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0229023C66E1400A24DA5 /* Preferences.swift */; };
+		A2E543CFD76BE40ECAB4AD9A /* Pods_NowPlaying.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 113A5ABF279D55E474CACCFE /* Pods_NowPlaying.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		34A0228D23C66D5300A24DA5 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				34A0228C23C66D5300A24DA5 /* MediaRemote.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		113A5ABF279D55E474CACCFE /* Pods_NowPlaying.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NowPlaying.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		342D8B6D23CB6CF500372129 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/NowPlayingPreferencePane.strings"; sourceTree = "<group>"; };
+		342D8B6E23CB6CF500372129 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/NowPlayingPreferencePane.strings; sourceTree = "<group>"; };
+		342D8B6F23CB6CF500372129 /* NowPlayingPreferencePane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NowPlayingPreferencePane.swift; sourceTree = "<group>"; };
+		342D8B7023CB6CF500372129 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/NowPlayingPreferencePane.strings; sourceTree = "<group>"; };
+		342D8B7223CB6CF500372129 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/NowPlayingPreferencePane.xib; sourceTree = "<group>"; };
+		342D8B7323CB6CF500372129 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/NowPlayingPreferencePane.strings"; sourceTree = "<group>"; };
+		342D8B7423CB6CF500372129 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/NowPlayingPreferencePane.strings; sourceTree = "<group>"; };
 		34A0227423C6632D00A24DA5 /* NowPlaying.pock */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NowPlaying.pock; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A0227823C6632D00A24DA5 /* NowPlayingWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingWidget.swift; sourceTree = "<group>"; };
 		34A0227A23C6632D00A24DA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		34A0228023C66BE100A24DA5 /* NowPlayingItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NowPlayingItem.swift; sourceTree = "<group>"; };
+		34A0228123C66BE100A24DA5 /* NowPlayingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NowPlayingView.swift; sourceTree = "<group>"; };
+		34A0228223C66BE100A24DA5 /* NowPlayingItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NowPlayingItemView.swift; sourceTree = "<group>"; };
+		34A0228323C66BE100A24DA5 /* NowPlayingHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NowPlayingHelper.swift; sourceTree = "<group>"; };
+		34A0228823C66D1C00A24DA5 /* MRMediaRemote.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MRMediaRemote.h; sourceTree = "<group>"; };
+		34A0228A23C66D5300A24DA5 /* MediaRemote.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaRemote.framework; path = ../../../../../../../../../../../System/Library/PrivateFrameworks/MediaRemote.framework; sourceTree = "<group>"; };
+		34A0228E23C66DF700A24DA5 /* NowPlayingWidgetStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingWidgetStyle.swift; sourceTree = "<group>"; };
+		34A0229023C66E1400A24DA5 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		34A0229323C66EED00A24DA5 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
+		5643518FD30F765E4E41E3A9 /* Pods-NowPlaying.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NowPlaying.debug.xcconfig"; path = "Target Support Files/Pods-NowPlaying/Pods-NowPlaying.debug.xcconfig"; sourceTree = "<group>"; };
+		A5B829F26F673E6578A8B94C /* Pods-NowPlaying.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NowPlaying.release.xcconfig"; path = "Target Support Files/Pods-NowPlaying/Pods-NowPlaying.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21,17 +66,31 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A2E543CFD76BE40ECAB4AD9A /* Pods_NowPlaying.framework in Frameworks */,
+				34A0228B23C66D5300A24DA5 /* MediaRemote.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		342D8B6B23CB6CF500372129 /* NowPlayingPreferencePane */ = {
+			isa = PBXGroup;
+			children = (
+				342D8B6C23CB6CF500372129 /* NowPlayingPreferencePane.strings */,
+				342D8B6F23CB6CF500372129 /* NowPlayingPreferencePane.swift */,
+				342D8B7123CB6CF500372129 /* NowPlayingPreferencePane.xib */,
+			);
+			path = NowPlayingPreferencePane;
+			sourceTree = "<group>";
+		};
 		34A0226A23C6632D00A24DA5 = {
 			isa = PBXGroup;
 			children = (
 				34A0227623C6632D00A24DA5 /* NowPlaying */,
 				34A0227523C6632D00A24DA5 /* Products */,
+				77893C9941666988ADC02FB6 /* Pods */,
+				E1A23E96DB08B0B527F3A26C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -47,7 +106,9 @@
 			isa = PBXGroup;
 			children = (
 				34A0227A23C6632D00A24DA5 /* Info.plist */,
+				34A0228923C66D2C00A24DA5 /* Private */,
 				34A0227723C6632D00A24DA5 /* Sources */,
+				34A0229223C66E1900A24DA5 /* Preferences */,
 			);
 			path = NowPlaying;
 			sourceTree = "<group>";
@@ -55,9 +116,50 @@
 		34A0227723C6632D00A24DA5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				34A0228323C66BE100A24DA5 /* NowPlayingHelper.swift */,
+				34A0228023C66BE100A24DA5 /* NowPlayingItem.swift */,
+				34A0228223C66BE100A24DA5 /* NowPlayingItemView.swift */,
+				34A0228123C66BE100A24DA5 /* NowPlayingView.swift */,
 				34A0227823C6632D00A24DA5 /* NowPlayingWidget.swift */,
+				34A0228E23C66DF700A24DA5 /* NowPlayingWidgetStyle.swift */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		34A0228923C66D2C00A24DA5 /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				34A0228823C66D1C00A24DA5 /* MRMediaRemote.h */,
+				34A0229323C66EED00A24DA5 /* Bridging-Header.h */,
+			);
+			path = Private;
+			sourceTree = "<group>";
+		};
+		34A0229223C66E1900A24DA5 /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				342D8B6B23CB6CF500372129 /* NowPlayingPreferencePane */,
+				34A0229023C66E1400A24DA5 /* Preferences.swift */,
+			);
+			path = Preferences;
+			sourceTree = "<group>";
+		};
+		77893C9941666988ADC02FB6 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				5643518FD30F765E4E41E3A9 /* Pods-NowPlaying.debug.xcconfig */,
+				A5B829F26F673E6578A8B94C /* Pods-NowPlaying.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		E1A23E96DB08B0B527F3A26C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				34A0228A23C66D5300A24DA5 /* MediaRemote.framework */,
+				113A5ABF279D55E474CACCFE /* Pods_NowPlaying.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -67,10 +169,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 34A0227D23C6632D00A24DA5 /* Build configuration list for PBXNativeTarget "NowPlaying" */;
 			buildPhases = (
+				A1186C9A45A3AECF73E0B766 /* [CP] Check Pods Manifest.lock */,
 				34A0226F23C6632D00A24DA5 /* Sources */,
 				34A0227023C6632D00A24DA5 /* Frameworks */,
 				34A0227123C6632D00A24DA5 /* Resources */,
 				34A0227223C6632D00A24DA5 /* Copy widget to destination folder */,
+				34A0228D23C66D5300A24DA5 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -103,6 +207,10 @@
 			knownRegions = (
 				en,
 				Base,
+				tr,
+				it,
+				"zh-Hant",
+				"zh-Hans",
 			);
 			mainGroup = 34A0226A23C6632D00A24DA5;
 			productRefGroup = 34A0227523C6632D00A24DA5 /* Products */;
@@ -119,6 +227,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				342D8B7723CB6CF500372129 /* NowPlayingPreferencePane.xib in Resources */,
+				342D8B7523CB6CF500372129 /* NowPlayingPreferencePane.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,6 +253,28 @@
 			shellPath = /bin/sh;
 			shellScript = "# Copy widget to destination folder.\necho \"Copying ${PRODUCT_NAME}.pock to destination folder\"\ncp -r $TARGET_BUILD_DIR/$PRODUCT_NAME.pock ~/Library/Application\\ Support/Pock/Widgets/";
 		};
+		A1186C9A45A3AECF73E0B766 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-NowPlaying-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -150,11 +282,41 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34A0228523C66BE200A24DA5 /* NowPlayingView.swift in Sources */,
+				34A0229123C66E1400A24DA5 /* Preferences.swift in Sources */,
+				34A0228623C66BE200A24DA5 /* NowPlayingItemView.swift in Sources */,
+				34A0228423C66BE200A24DA5 /* NowPlayingItem.swift in Sources */,
+				342D8B7623CB6CF500372129 /* NowPlayingPreferencePane.swift in Sources */,
+				34A0228F23C66DF700A24DA5 /* NowPlayingWidgetStyle.swift in Sources */,
+				34A0228723C66BE200A24DA5 /* NowPlayingHelper.swift in Sources */,
 				34A0227923C6632D00A24DA5 /* NowPlayingWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		342D8B6C23CB6CF500372129 /* NowPlayingPreferencePane.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				342D8B6D23CB6CF500372129 /* zh-Hans */,
+				342D8B6E23CB6CF500372129 /* en */,
+				342D8B7023CB6CF500372129 /* it */,
+				342D8B7323CB6CF500372129 /* zh-Hant */,
+				342D8B7423CB6CF500372129 /* tr */,
+			);
+			name = NowPlayingPreferencePane.strings;
+			sourceTree = "<group>";
+		};
+		342D8B7123CB6CF500372129 /* NowPlayingPreferencePane.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				342D8B7223CB6CF500372129 /* Base */,
+			);
+			name = NowPlayingPreferencePane.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		34A0227B23C6632D00A24DA5 /* Debug */ = {
@@ -268,6 +430,7 @@
 		};
 		34A0227E23C6632D00A24DA5 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5643518FD30F765E4E41E3A9 /* Pods-NowPlaying.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -277,13 +440,19 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Application\\ Support/Pock/Widgets";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pigigaldi.pock.NowPlaying;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "NowPlaying/Private/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+				);
 				WRAPPER_EXTENSION = pock;
 			};
 			name = Debug;
 		};
 		34A0227F23C6632D00A24DA5 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A5B829F26F673E6578A8B94C /* Pods-NowPlaying.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -293,7 +462,12 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Application\\ Support/Pock/Widgets";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pigigaldi.pock.NowPlaying;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "NowPlaying/Private/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+				);
 				WRAPPER_EXTENSION = pock;
 			};
 			name = Release;

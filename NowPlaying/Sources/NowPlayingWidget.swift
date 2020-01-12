@@ -9,20 +9,44 @@
 import Foundation
 import AppKit
 import PockKit
-        				
-/// Make sure to include `PockKit` in your Podfile and run `pod install`
+import Defaults
 				        
 class NowPlayingWidget: PKWidget {
     var identifier: NSTouchBarItem.Identifier = NSTouchBarItem.Identifier(rawValue: "NowPlayingWidget")
-    var customizationLabel: String = "NowPlaying"
+    var customizationLabel: String = "Now Playing"
     var view: NSView!
 
+    private var nowPlayingView: NowPlayingView = NowPlayingView(frame: .zero)
+    
     required init() {
-        self.view = NSButton(title: "NowPlaying", target: self, action: #selector(printMessage))
+        self.updateNowPLayingItemView()
+        self.registerForNotifications()
+        self.view = nowPlayingView
     }
     
-    @objc private func printMessage() {
-        print("[NowPlayingWidget]: Hello, World!")
+    private func registerForNotifications() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateNowPLayingItemView),
+                                               name: NowPlayingHelper.kNowPlayingItemDidChange,
+                                               object: nil
+        )
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateNowPlayingStyle),
+                                               name: .didChangeNowPlayingWidgetStyle,
+                                               object: nil
+        )
+    }
+    
+    @objc private func updateNowPLayingItemView() {
+        nowPlayingView.item = NowPlayingHelper.shared.nowPlayingItem
+    }
+    
+    @objc private func updateNowPlayingStyle() {
+        nowPlayingView.style = Defaults[.nowPlayingWidgetStyle]
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
         
 }

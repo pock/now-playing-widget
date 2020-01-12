@@ -21,8 +21,10 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2020 Pierluigi Galdi. All rights reserved.</string>
 	<key>NSPrincipalClass</key>
-	<string>NowPlayingWidget</string>
+	<string>NowPlaying.NowPlayingWidget</string>
 	<key>PKWidgetAuthor</key>
 	<string>Pierluigi Galdi</string>
+	<key>PKWidgetPreferenceClass</key>
+	<string>NowPlaying.NowPlayingPreferencePane</string>
 </dict>
 </plist>
