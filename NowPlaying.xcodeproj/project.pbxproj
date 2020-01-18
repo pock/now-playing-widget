@@ -138,8 +138,8 @@
 		34A0229223C66E1900A24DA5 /* Preferences */ = {
 			isa = PBXGroup;
 			children = (
-				342D8B6B23CB6CF500372129 /* NowPlayingPreferencePane */,
 				34A0229023C66E1400A24DA5 /* Preferences.swift */,
+				342D8B6B23CB6CF500372129 /* NowPlayingPreferencePane */,
 			);
 			path = Preferences;
 			sourceTree = "<group>";

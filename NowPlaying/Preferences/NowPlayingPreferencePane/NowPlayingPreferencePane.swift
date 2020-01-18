@@ -13,17 +13,6 @@ import PockKit
 class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
     
     static var nibName: NSNib.Name = "NowPlayingPreferencePane"
-
-    var toolbarItemIcon: NSImage {
-        let id: String
-        if #available(macOS 10.15, *) {
-            id = "com.apple.Music"
-        }else {
-            id = "com.apple.iTunes"
-        }
-        let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: id)!
-        return NSWorkspace.shared.icon(forFile: path)
-    }
     
     /// UI Elements
     @IBOutlet weak var defaultsMusicPlayerIcon:         NSImageView!
