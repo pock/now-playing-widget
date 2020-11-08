@@ -48,37 +48,44 @@ class NowPlayingItemView: PKDetailView {
         default:
             break
         }
-		if appBundleIdentifier.isEmpty {
-			if #available(OSX 10.15, *) {
-				appBundleIdentifier = "com.apple.Music"
-			}else {
-				appBundleIdentifier = "com.apple.iTunes"
-			}
-		}
-		print("[NowPlaying]: bundle_identifier: `\(appBundleIdentifier)`")
-        
-        let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: appBundleIdentifier)
         
         DispatchQueue.main.async { [weak self] in
+			
+			var title  = self?.nowPLayingItem?.title  ?? ""
+			var artist = self?.nowPLayingItem?.artist ?? ""
+			
+			if appBundleIdentifier.isEmpty {
+				if #available(OSX 10.15, *) {
+					appBundleIdentifier = "com.apple.Music"
+				}else {
+					appBundleIdentifier = "com.apple.iTunes"
+				}
+				title  = "Tap here"
+				artist = "To play music"
+			}else {
+				if title.isEmpty && artist.isEmpty {
+					let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: appBundleIdentifier)
+					title  = path?.split(separator: "/").last?.replacingOccurrences(of: ".app", with: "") ?? "Missing title"
+					artist = "Unknown artist"
+				}
+			}
+			
+			if title.isEmpty {
+				title = "Missing title"
+			}
+			if artist.isEmpty {
+				artist = "Unknown artist"
+			}
+			
 			if let artwork = self?.nowPLayingItem?.artwork {
 				self?.imageView.image = artwork
 			}else {
-				if let path = path {
+				if let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: appBundleIdentifier) {
 					self?.imageView.image = NSWorkspace.shared.icon(forFile: path)
 				}else {
 					self?.imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
 				}
 			}
-            
-            var title  = self?.nowPLayingItem?.title  ?? "Tap here"
-            var artist = self?.nowPLayingItem?.artist ?? "to play music"
-            
-            if title.isEmpty {
-                title = "Missing title"
-            }
-            if artist.isEmpty {
-                artist = "Unknown artist"
-            }
             
             let titleWidth    = (title  as NSString).size(withAttributes: self?.titleView.textFontAttributes    ?? [:]).width
             let subtitleWidth = (artist as NSString).size(withAttributes: self?.subtitleView.textFontAttributes ?? [:]).width

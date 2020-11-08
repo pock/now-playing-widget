@@ -134,6 +134,7 @@ extension NowPlayingHelper {
 	
 }
 
+/// Credit: https://github.com/musa11971/Music-Bar
 extension NowPlayingHelper {
 	/// Retrieves the artwork of the current track from Apple
 	fileprivate func fetchArtwork(for item: NowPlayingItem?, _ completion: @escaping (NSImage?) -> Void) {
@@ -183,11 +184,9 @@ extension NowPlayingHelper {
 	}
 }
 
-
 extension URLSession {
 	static func fetchJSON(fromURL url: URL, completionHandler: @escaping (Data?, Any?, Error?) -> Void) -> URLSessionTask {
 		let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-			// Error occurred during request
 			if error != nil {
 				completionHandler(nil, nil, error)
 				return
@@ -196,8 +195,7 @@ extension URLSession {
 				completionHandler(nil, nil, NSError(domain:"", code:401, userInfo:[ NSLocalizedDescriptionKey: "Invalid data"]))
 				return
 			}
-			let json = try? JSONSerialization.jsonObject(with: data!, options: .allowFragments)
-			if json == nil {
+			guard let json = try? JSONSerialization.jsonObject(with: data!, options: .allowFragments) else {
 				completionHandler(nil, nil, NSError(domain:"", code:401, userInfo:[ NSLocalizedDescriptionKey: "Invalid json"]))
 				return
 			}

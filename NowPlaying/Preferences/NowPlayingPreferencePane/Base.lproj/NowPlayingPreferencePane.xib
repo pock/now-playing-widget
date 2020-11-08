@@ -12,7 +12,7 @@
                 <outlet property="defaultRadioButton" destination="hjN-rN-Bz7" id="DuT-sv-3ur"/>
                 <outlet property="hideWidgetIfNoMedia" destination="o7u-jf-oUS" id="l0H-jI-rKk"/>
                 <outlet property="imagesStackView" destination="6vs-1x-7qT" id="xRb-qe-4M9"/>
-                <outlet property="invertSwipeGesture" destination="mSI-i6-6Vt" id="s4c-Oy-d6U"/>
+                <outlet property="invertSwipeGesture" destination="1oC-rO-r9e" id="KhC-0p-wsb"/>
                 <outlet property="onlyInfoRadioButton" destination="SWC-PR-hvh" id="OBq-Mb-hey"/>
                 <outlet property="playPauseRadioButton" destination="z1t-VA-Pez" id="Pyl-fj-gnH"/>
                 <outlet property="showMediaArtwork" destination="65s-FT-RlJ" id="7R3-47-8JL"/>
@@ -164,15 +164,12 @@
                                         <action selector="didChangeCheckboxState:" target="-2" id="FVn-JD-dmu"/>
                                     </connections>
                                 </button>
-                                <button verticalHuggingPriority="750" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="mSI-i6-6Vt">
+                                <button verticalHuggingPriority="750" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="1oC-rO-r9e">
                                     <rect key="frame" x="-2" y="-2" width="145" height="18"/>
-                                    <buttonCell key="cell" type="check" title="Invert swipe gesture" bezelStyle="regularSquare" imagePosition="left" inset="2" id="8Rh-se-AKA">
+                                    <buttonCell key="cell" type="check" title="Invert swipe gesture" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Uhv-Bg-PsA">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
-                                    <connections>
-                                        <action selector="didChangeCheckboxState:" target="-2" id="ciN-Yi-Fin"/>
-                                    </connections>
                                 </button>
                             </subviews>
                             <visibilityPriorities>
