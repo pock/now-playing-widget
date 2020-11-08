@@ -15,14 +15,15 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
     static var nibName: NSNib.Name = "NowPlayingPreferencePane"
     
     /// UI Elements
-    @IBOutlet weak var defaultsMusicPlayerIcon:         NSImageView!
-    @IBOutlet weak var defaultsMusicPlayerName:         NSTextField!
     @IBOutlet private weak var imagesStackView:         NSStackView!
     @IBOutlet private weak var defaultRadioButton:      NSButton!
     @IBOutlet private weak var onlyInfoRadioButton:     NSButton!
     @IBOutlet private weak var playPauseRadioButton:    NSButton!
+	
     @IBOutlet private weak var hideWidgetIfNoMedia:     NSButton!
     @IBOutlet private weak var animateIconWhilePlaying: NSButton!
+	@IBOutlet private weak var showMediaArtwork:		NSButton!
+	@IBOutlet private weak var invertSwipeGesture:		NSButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,46 +35,17 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
         case .playPause:
             playPauseRadioButton.state = .on
         }
-        hideWidgetIfNoMedia.state     = Defaults[.hideNowPlayingIfNoMedia] ? .on : .off
-        animateIconWhilePlaying.state = Defaults[.animateIconWhilePlaying] ? .on : .off
+        updateButtonsState()
         setupImageViewClickGesture()
-        updateDefaultMusicPlayer()
     }
     
-    @IBAction func didClickChooseDefaultMusicPlayerButton(_ sender: NSButton?) {
-        guard let window = view.window,
-              let applicationDirectoryUrl = FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first else {
-            return
-        }
-        let openPanel = NSOpenPanel()
-        openPanel.directoryURL            = applicationDirectoryUrl
-        openPanel.canChooseDirectories    = false
-        openPanel.canChooseFiles          = true
-        openPanel.allowsMultipleSelection = false
-        openPanel.allowedFileTypes        = ["app", "App", "APP"]
-        openPanel.beginSheetModal(for: window, completionHandler: { [weak self] result in
-            if result == .OK {
-                guard let applicationPath = openPanel.url?.path,
-                      let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier,
-                      let bundle = Bundle.init(url: URL.init(fileURLWithPath: applicationPath)) else {
-                    return
-                }
-                let displayName = bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-                let bundleName  = bundle.object(forInfoDictionaryKey: "CFBundleName") as? String
-                Defaults[.defaultMusicPlayerName]     = displayName ?? bundleName ?? ""
-                Defaults[.defaultMusicPlayerBundleID] = applicationBundleId
-                Defaults[.defaultMusicPlayerPath]     = applicationPath
-                self?.updateDefaultMusicPlayer()
-            }
-        })
-    }
-    
-    private func updateDefaultMusicPlayer() {
-        self.defaultsMusicPlayerIcon.image = NSWorkspace.shared.icon(forFile: Defaults[.defaultMusicPlayerPath])
-        self.defaultsMusicPlayerName.stringValue = Defaults[.defaultMusicPlayerName]
-        NotificationCenter.default.post(name: NowPlayingHelper.kNowPlayingItemDidChange, object: nil)
-    }
-    
+	private func updateButtonsState() {
+		hideWidgetIfNoMedia.state     = Defaults[.hideNowPlayingIfNoMedia] ? .on : .off
+		animateIconWhilePlaying.state = Defaults[.animateIconWhilePlaying] ? .on : .off
+		showMediaArtwork.state 		  = Defaults[.showMediaArtwork] 	   ? .on : .off
+		invertSwipeGesture.state 	  = Defaults[.invertSwipeGesture] 	   ? .on : .off
+	}
+	
     private func setupImageViewClickGesture() {
         imagesStackView.arrangedSubviews.forEach({
             $0.addGestureRecognizer(NSClickGestureRecognizer(target: self, action: #selector(didSelectRadioButton(_:))))
@@ -113,6 +85,20 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
             Defaults[.hideNowPlayingIfNoMedia] = button.state == .on
         case 1:
             Defaults[.animateIconWhilePlaying] = button.state == .on
+			if Defaults[.showMediaArtwork] {
+				Defaults[.showMediaArtwork] = !Defaults[.animateIconWhilePlaying]
+			}
+			updateButtonsState()
+			NotificationCenter.default.post(name: NSNotification.Name(rawValue: kMRMediaRemoteNowPlayingApplicationClientStateDidChange), object: nil)
+		case 2:
+			Defaults[.showMediaArtwork] = button.state == .on
+			if Defaults[.animateIconWhilePlaying] {
+				Defaults[.animateIconWhilePlaying] = !Defaults[.showMediaArtwork]
+			}
+			updateButtonsState()
+			NotificationCenter.default.post(name: NSNotification.Name(rawValue: kMRMediaRemoteNowPlayingApplicationClientStateDidChange), object: nil)
+		case 3:
+			Defaults[.invertSwipeGesture] = button.state == .on
         default:
             return
         }

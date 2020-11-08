@@ -45,20 +45,30 @@ class NowPlayingItemView: PKDetailView {
         switch (appBundleIdentifier) {
         case "com.apple.WebKit.WebContent":
             appBundleIdentifier = "com.apple.Safari"
-        case "com.spotify.client", "com.apple.iTunes", "com.apple.Safari", "com.google.Chrome", "com.netease.163music", "com.tencent.QQMusicMac", "com.xiami.macclient", "com.apple.Music":
-            break
         default:
-            appBundleIdentifier = Defaults[.defaultMusicPlayerBundleID]
+            break
         }
+		if appBundleIdentifier.isEmpty {
+			if #available(OSX 10.15, *) {
+				appBundleIdentifier = "com.apple.Music"
+			}else {
+				appBundleIdentifier = "com.apple.iTunes"
+			}
+		}
+		print("[NowPlaying]: bundle_identifier: `\(appBundleIdentifier)`")
         
         let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: appBundleIdentifier)
         
         DispatchQueue.main.async { [weak self] in
-            if let path = path {
-                self?.imageView.image = NSWorkspace.shared.icon(forFile: path)
-            }else {
-                self?.imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
-            }
+			if let artwork = self?.nowPLayingItem?.artwork {
+				self?.imageView.image = artwork
+			}else {
+				if let path = path {
+					self?.imageView.image = NSWorkspace.shared.icon(forFile: path)
+				}else {
+					self?.imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
+				}
+			}
             
             var title  = self?.nowPLayingItem?.title  ?? "Tap here"
             var artist = self?.nowPLayingItem?.artist ?? "to play music"
@@ -96,11 +106,19 @@ class NowPlayingItemView: PKDetailView {
     }
     
     override open func didSwipeLeftHandler() {
-        self.didSwipeLeft?()
+		if Defaults[.invertSwipeGesture] {
+			self.didSwipeRight?()
+		}else {
+			self.didSwipeLeft?()
+		}
     }
     
     override open func didSwipeRightHandler() {
-        self.didSwipeRight?()
+		if Defaults[.invertSwipeGesture] {
+			self.didSwipeLeft?()
+		}else {
+			self.didSwipeRight?()
+		}
     }
     
     override func didLongPressHandler() {

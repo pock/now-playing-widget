@@ -1,106 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15702" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15702"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="NowPlayingPreferencePane" customModule="Pock" customModuleProvider="target">
+        <customObject id="-2" userLabel="File's Owner" customClass="NowPlayingPreferencePane" customModule="NowPlaying" customModuleProvider="target">
             <connections>
-                <outlet property="animateIconWhilePlaying" destination="mSI-i6-6Vt" id="iPT-3g-dzm"/>
+                <outlet property="animateIconWhilePlaying" destination="VA9-bL-MAf" id="g05-wM-Sav"/>
                 <outlet property="defaultRadioButton" destination="hjN-rN-Bz7" id="DuT-sv-3ur"/>
-                <outlet property="defaultsMusicPlayerIcon" destination="CLp-Up-gsG" id="NRS-Z6-Hg7"/>
-                <outlet property="defaultsMusicPlayerName" destination="oOd-zl-VJy" id="wy5-P5-VP4"/>
                 <outlet property="hideWidgetIfNoMedia" destination="o7u-jf-oUS" id="l0H-jI-rKk"/>
                 <outlet property="imagesStackView" destination="6vs-1x-7qT" id="xRb-qe-4M9"/>
+                <outlet property="invertSwipeGesture" destination="mSI-i6-6Vt" id="s4c-Oy-d6U"/>
                 <outlet property="onlyInfoRadioButton" destination="SWC-PR-hvh" id="OBq-Mb-hey"/>
                 <outlet property="playPauseRadioButton" destination="z1t-VA-Pez" id="Pyl-fj-gnH"/>
+                <outlet property="showMediaArtwork" destination="65s-FT-RlJ" id="7R3-47-8JL"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="584" height="352"/>
+            <rect key="frame" x="0.0" y="0.0" width="584" height="360"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="22" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XnL-G6-kic">
-                    <rect key="frame" x="20" y="20" width="544" height="312"/>
+                    <rect key="frame" x="20" y="20" width="544" height="320"/>
                     <subviews>
-                        <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="12" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FyL-jb-YY2">
-                            <rect key="frame" x="0.0" y="291" width="278" height="21"/>
-                            <subviews>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="x3G-BF-a1S">
-                                    <rect key="frame" x="-2" y="3" width="132" height="16"/>
-                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Default Music Player:" id="cQI-d5-GAP">
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="5" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gXk-CZ-uPf">
-                                    <rect key="frame" x="140" y="3" width="51" height="16"/>
-                                    <subviews>
-                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="CLp-Up-gsG">
-                                            <rect key="frame" x="0.0" y="0.0" width="16" height="16"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="16" id="DyT-Tp-RIt"/>
-                                                <constraint firstAttribute="width" constant="16" id="Myh-3V-RrS"/>
-                                            </constraints>
-                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="pock-app-icon" id="k9J-mg-HZK"/>
-                                        </imageView>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oOd-zl-VJy">
-                                            <rect key="frame" x="19" y="0.0" width="34" height="16"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Pock" id="KtW-NO-mJI">
-                                                <font key="font" metaFont="system"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="CLp-Up-gsG" firstAttribute="centerY" secondItem="gXk-CZ-uPf" secondAttribute="centerY" id="SMY-Mc-a8C"/>
-                                        <constraint firstItem="oOd-zl-VJy" firstAttribute="centerY" secondItem="gXk-CZ-uPf" secondAttribute="centerY" id="oIw-IF-I5x"/>
-                                    </constraints>
-                                    <visibilityPriorities>
-                                        <integer value="1000"/>
-                                        <integer value="1000"/>
-                                    </visibilityPriorities>
-                                    <customSpacing>
-                                        <real value="3.4028234663852886e+38"/>
-                                        <real value="3.4028234663852886e+38"/>
-                                    </customSpacing>
-                                </stackView>
-                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JBq-vy-GeX">
-                                    <rect key="frame" x="197" y="-7" width="87" height="32"/>
-                                    <buttonCell key="cell" type="push" title="Choose" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="k6o-Z7-mUK">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="didClickChooseDefaultMusicPlayerButton:" target="-2" id="4Lr-Zv-vBO"/>
-                                    </connections>
-                                </button>
-                            </subviews>
-                            <constraints>
-                                <constraint firstItem="x3G-BF-a1S" firstAttribute="centerY" secondItem="FyL-jb-YY2" secondAttribute="centerY" id="44b-Rr-4Ws"/>
-                                <constraint firstItem="JBq-vy-GeX" firstAttribute="centerY" secondItem="FyL-jb-YY2" secondAttribute="centerY" id="VdJ-DB-ygd"/>
-                                <constraint firstItem="gXk-CZ-uPf" firstAttribute="centerY" secondItem="FyL-jb-YY2" secondAttribute="centerY" id="n9U-Gn-Q0t"/>
-                            </constraints>
-                            <visibilityPriorities>
-                                <integer value="1000"/>
-                                <integer value="1000"/>
-                                <integer value="1000"/>
-                            </visibilityPriorities>
-                            <customSpacing>
-                                <real value="3.4028234663852886e+38"/>
-                                <real value="3.4028234663852886e+38"/>
-                                <real value="3.4028234663852886e+38"/>
-                            </customSpacing>
-                        </stackView>
                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lc0-ND-UTy">
-                            <rect key="frame" x="-2" y="253" width="87" height="16"/>
+                            <rect key="frame" x="-2" y="304" width="87" height="16"/>
                             <textFieldCell key="cell" lineBreakMode="clipping" title="Choose style:" id="ooI-7i-Wfp">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -108,7 +37,7 @@
                             </textFieldCell>
                         </textField>
                         <stackView distribution="fillEqually" orientation="horizontal" alignment="centerY" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6vs-1x-7qT">
-                            <rect key="frame" x="0.0" y="131" width="544" height="100"/>
+                            <rect key="frame" x="0.0" y="182" width="544" height="100"/>
                             <subviews>
                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lVi-bn-Iha">
                                     <rect key="frame" x="-3" y="-3" width="174" height="106"/>
@@ -156,10 +85,10 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="169" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="M9l-1b-aku">
-                            <rect key="frame" x="75" y="70" width="395" height="39"/>
+                            <rect key="frame" x="75" y="95" width="395" height="65"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hjN-rN-Bz7">
-                                    <rect key="frame" x="-1" y="22" width="22" height="18"/>
+                                    <rect key="frame" x="-1" y="48" width="22" height="18"/>
                                     <buttonCell key="cell" type="radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="aEQ-zE-ACK">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -169,7 +98,7 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="SWC-PR-hvh">
-                                    <rect key="frame" x="187" y="22" width="22" height="18"/>
+                                    <rect key="frame" x="187" y="48" width="22" height="18"/>
                                     <buttonCell key="cell" type="radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="8v9-US-mJe">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -179,7 +108,7 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="z1t-VA-Pez">
-                                    <rect key="frame" x="375" y="22" width="22" height="18"/>
+                                    <rect key="frame" x="375" y="48" width="22" height="18"/>
                                     <buttonCell key="cell" type="radio" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ey0-xf-jXW">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -201,10 +130,10 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fillEqually" orientation="vertical" alignment="leading" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="II5-0Z-P7k">
-                            <rect key="frame" x="0.0" y="0.0" width="179" height="48"/>
+                            <rect key="frame" x="0.0" y="0.0" width="219" height="73"/>
                             <subviews>
-                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="o7u-jf-oUS" userLabel="Hide Trash Checkbox">
-                                    <rect key="frame" x="-2" y="32" width="181" height="18"/>
+                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="o7u-jf-oUS">
+                                    <rect key="frame" x="-2" y="57" width="181" height="18"/>
                                     <buttonCell key="cell" type="check" title="Hide while no item playing" bezelStyle="regularSquare" imagePosition="left" inset="2" id="krA-nL-skn">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -213,9 +142,31 @@
                                         <action selector="didChangeCheckboxState:" target="-2" id="Fp2-R4-Oh4"/>
                                     </connections>
                                 </button>
-                                <button verticalHuggingPriority="750" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="mSI-i6-6Vt" userLabel="Hide Trash Checkbox">
-                                    <rect key="frame" x="-2" y="-2" width="183" height="18"/>
-                                    <buttonCell key="cell" type="check" title="Animate icon while playing" bezelStyle="regularSquare" imagePosition="left" inset="2" id="8Rh-se-AKA">
+                                <button verticalHuggingPriority="750" tag="1" id="VA9-bL-MAf">
+                                    <rect key="frame" x="-2" y="40" width="183" height="18"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <buttonCell key="cell" type="check" title="Animate icon while playing" bezelStyle="regularSquare" imagePosition="left" inset="2" id="4Dg-PS-L8w">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="didChangeCheckboxState:" target="-2" id="lQq-oG-wDB"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" tag="2" id="65s-FT-RlJ" userLabel="Show media artwork">
+                                    <rect key="frame" x="-2" y="32" width="223" height="18"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <buttonCell key="cell" type="check" title="Show media artwork (if available)" bezelStyle="regularSquare" imagePosition="left" inset="2" id="UZ1-Yo-kfg">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="didChangeCheckboxState:" target="-2" id="FVn-JD-dmu"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="mSI-i6-6Vt">
+                                    <rect key="frame" x="-2" y="-2" width="145" height="18"/>
+                                    <buttonCell key="cell" type="check" title="Invert swipe gesture" bezelStyle="regularSquare" imagePosition="left" inset="2" id="8Rh-se-AKA">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -227,8 +178,12 @@
                             <visibilityPriorities>
                                 <integer value="1000"/>
                                 <integer value="1000"/>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
                             </visibilityPriorities>
                             <customSpacing>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
                             </customSpacing>
@@ -244,10 +199,8 @@
                         <integer value="1000"/>
                         <integer value="1000"/>
                         <integer value="1000"/>
-                        <integer value="1000"/>
                     </visibilityPriorities>
                     <customSpacing>
-                        <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
@@ -261,13 +214,12 @@
                 <constraint firstAttribute="trailing" secondItem="XnL-G6-kic" secondAttribute="trailing" constant="20" id="Uuf-us-G5W"/>
                 <constraint firstItem="XnL-G6-kic" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" id="uNb-YJ-LRJ"/>
             </constraints>
-            <point key="canvasLocation" x="111" y="197"/>
+            <point key="canvasLocation" x="23" y="116.5"/>
         </customView>
     </objects>
     <resources>
         <image name="default" width="504" height="300"/>
         <image name="only_info" width="504" height="300"/>
         <image name="play_pause" width="504" height="300"/>
-        <image name="pock-app-icon" width="150" height="150"/>
     </resources>
 </document>

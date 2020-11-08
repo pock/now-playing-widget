@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AppKit
 
 class NowPlayingItem {
     /// Data
@@ -14,5 +15,16 @@ class NowPlayingItem {
     public var title:               String?
     public var album:               String?
     public var artist:              String?
+	public var artwork:				NSImage?
     public var isPlaying:           Bool = false
+	/// Compound
+	public var searchTerm: String? {
+		if let title = title {
+			if let artist = artist {
+				return "\(title) \(artist)".replacingOccurrences(of: " ", with: "+").addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+			}
+			return title.replacingOccurrences(of: " ", with: "+").addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+		}
+		return nil
+	}
 }

@@ -47,16 +47,6 @@ class NowPlayingView: PKView {
         return false
     }
     
-    /// Default music player
-    private var isRunningDefaultMusicPlayer: Bool {
-        for app in NSWorkspace.shared.runningApplications {
-            if app.bundleIdentifier == Defaults[.defaultMusicPlayerBundleID] {
-                return true
-            }
-        }
-        return false
-    }
-    
     /// Styles
     public var style: NowPlayingWidgetStyle = Defaults[.nowPlayingWidgetStyle] {
         didSet {
@@ -176,16 +166,7 @@ class NowPlayingView: PKView {
     
     /// Handlers
     @objc private func togglePlayPause() {
-        if isRunningDefaultMusicPlayer && item?.appBundleIdentifier != nil {
-            NowPlayingHelper.shared.togglePlayingState()
-        }else {
-            NSWorkspace.shared.launchApplication(
-                withBundleIdentifier: Defaults[.defaultMusicPlayerBundleID],
-                options: [],
-                additionalEventParamDescriptor: nil,
-                launchIdentifier: nil
-            )
-        }
+		NowPlayingHelper.shared.togglePlayingState()
     }
     
     @objc private func skipToNextItem() {
