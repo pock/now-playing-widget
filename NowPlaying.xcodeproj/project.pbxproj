@@ -19,6 +19,7 @@
 		34A0228C23C66D5300A24DA5 /* MediaRemote.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 34A0228A23C66D5300A24DA5 /* MediaRemote.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		34A0228F23C66DF700A24DA5 /* NowPlayingWidgetStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0228E23C66DF700A24DA5 /* NowPlayingWidgetStyle.swift */; };
 		34A0229123C66E1400A24DA5 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0229023C66E1400A24DA5 /* Preferences.swift */; };
+		34E6A28925587F21002693EA /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34E6A28825587F21002693EA /* Media.xcassets */; };
 		A2E543CFD76BE40ECAB4AD9A /* Pods_NowPlaying.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 113A5ABF279D55E474CACCFE /* Pods_NowPlaying.framework */; };
 /* End PBXBuildFile section */
 
@@ -57,6 +58,7 @@
 		34A0228E23C66DF700A24DA5 /* NowPlayingWidgetStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingWidgetStyle.swift; sourceTree = "<group>"; };
 		34A0229023C66E1400A24DA5 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		34A0229323C66EED00A24DA5 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
+		34E6A28825587F21002693EA /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		5643518FD30F765E4E41E3A9 /* Pods-NowPlaying.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NowPlaying.debug.xcconfig"; path = "Target Support Files/Pods-NowPlaying/Pods-NowPlaying.debug.xcconfig"; sourceTree = "<group>"; };
 		A5B829F26F673E6578A8B94C /* Pods-NowPlaying.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NowPlaying.release.xcconfig"; path = "Target Support Files/Pods-NowPlaying/Pods-NowPlaying.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -138,6 +140,7 @@
 		34A0229223C66E1900A24DA5 /* Preferences */ = {
 			isa = PBXGroup;
 			children = (
+				34E6A28825587F21002693EA /* Media.xcassets */,
 				34A0229023C66E1400A24DA5 /* Preferences.swift */,
 				342D8B6B23CB6CF500372129 /* NowPlayingPreferencePane */,
 			);
@@ -192,7 +195,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Pierluigi Galdi";
 				TargetAttributes = {
 					34A0227323C6632D00A24DA5 = {
@@ -228,6 +231,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				342D8B7723CB6CF500372129 /* NowPlayingPreferencePane.xib in Resources */,
+				34E6A28925587F21002693EA /* Media.xcassets in Resources */,
 				342D8B7523CB6CF500372129 /* NowPlayingPreferencePane.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -323,6 +327,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -345,6 +350,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -381,6 +387,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -403,6 +410,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -425,6 +433,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
 		};
@@ -433,13 +442,15 @@
 			baseConfigurationReference = 5643518FD30F765E4E41E3A9 /* Pods-NowPlaying.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 788D9WZ9Z3;
 				INFOPLIST_FILE = NowPlaying/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Application\\ Support/Pock/Widgets";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pigigaldi.pock.NowPlaying;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "NowPlaying/Private/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
@@ -455,13 +466,15 @@
 			baseConfigurationReference = A5B829F26F673E6578A8B94C /* Pods-NowPlaying.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 788D9WZ9Z3;
 				INFOPLIST_FILE = NowPlaying/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Application\\ Support/Pock/Widgets";
 				PRODUCT_BUNDLE_IDENTIFIER = com.pigigaldi.pock.NowPlaying;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "NowPlaying/Private/Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
