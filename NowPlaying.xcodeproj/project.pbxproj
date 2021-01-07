@@ -255,7 +255,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy widget to destination folder.\necho \"Copying ${PRODUCT_NAME}.pock to destination folder\"\n# cp -r $TARGET_BUILD_DIR/$PRODUCT_NAME.pock ~/Library/Application\\ Support/Pock/Widgets/\n";
+			shellScript = "# Copy widget to destination folder.\nif [ \"${CONFIGURATION}\" == \"Debug\" ]; then\n  echo \"Copying ${PRODUCT_NAME}.pock to destination folder\"\n  cp -r $TARGET_BUILD_DIR/$PRODUCT_NAME.pock ~/Library/Application\\ Support/Pock/Widgets/\nfi\n";
 		};
 		A1186C9A45A3AECF73E0B766 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
