@@ -14,6 +14,18 @@ fileprivate let pauseIconName = NSImage.touchBarPauseTemplateName
 fileprivate let previousIcon = NSImage(named: NSImage.touchBarRewindTemplateName)!
 fileprivate let nextIcon     = NSImage(named: NSImage.touchBarFastForwardTemplateName)!
 
+fileprivate extension NSButton {
+	static func build(image: NSImage, target: Any?, action: Selector?) -> NSButton {
+		let button = NSButton(image: image, target: target, action: action)
+		button.imageScaling = .scaleProportionallyDown
+		button.bezelStyle = .circular
+		button.bezelColor = .red
+		button.isBordered = false
+		button.width(18)
+		return button
+	}
+}
+
 class NowPlayingView: PKView {
     
     /// UI
@@ -23,88 +35,110 @@ class NowPlayingView: PKView {
     private var itemView:        NowPlayingItemView?
     private var playPauseButton: NSButton?
     private var previousButton:  NSButton {
-        let button = NSButton(image: previousIcon, target: self, action: #selector(skipToPreviousItem))
-        button.bezelColor = .black
-        button.snp.makeConstraints({ m in
-            m.width.equalTo(32)
-        })
-        return button
+		return NSButton.build(image: previousIcon, target: self, action: #selector(skipToPreviousItem))
     }
     private var nextButton: NSButton {
-        let button = NSButton(image: nextIcon, target: self, action: #selector(skipToNextItem))
-        button.bezelColor = .black
-        button.snp.makeConstraints({ m in
-            m.width.equalTo(32)
-        })
-        return button
+		return NSButton.build(image: nextIcon, target: self, action: #selector(skipToNextItem))
     }
     
     /// Core
     private var shouldHideWidget: Bool {
         if Defaults[.hideNowPlayingIfNoMedia] {
-            return item?.appBundleIdentifier == nil
+            return item?.client == nil
         }
         return false
     }
     
     /// Styles
-    public var style: NowPlayingWidgetStyle = Defaults[.nowPlayingWidgetStyle] {
-        didSet {
-            configureUIElements()
-        }
+    public var style: NowPlayingWidgetStyle {
+		return Defaults[.nowPlayingWidgetStyle]
     }
     
     /// Data
-    public var item: NowPlayingItem? = nil {
-        didSet {
-            DispatchQueue.main.async { [weak self] in
-                self?.updateContentViews()
-            }
-        }
-    }
+	private var helper: NowPlayingHelper?
+	public var item: NowPlayingItem? {
+		return NowPlayingHelper.currentNowPlayingItem
+	}
+	
+	deinit {
+		NSLog("[NOW_PLAYING]: NowPlayingView - deinit")
+		itemView?.removeFromSuperview()
+		itemView = nil
+		subviews.forEach({ $0.removeFromSuperview() })
+		helper = nil
+		NotificationCenter.default.removeObserver(self)
+	}
     
+	/// Notifications
+	private func registerForNotifications() {
+		NotificationCenter.default.addObserver(self,
+											   selector: #selector(_updateContentViews),
+											   name: NowPlayingHelper.kNowPlayingItemDidChange,
+											   object: nil
+		)
+		NotificationCenter.default.addObserver(self,
+											   selector: #selector(_configureUIElements),
+											   name: .didChangeNowPlayingWidgetStyle,
+											   object: nil
+		)
+	}
+	
     /// Overrides
     override init(frame frameRect: NSRect) {
-        super.init(frame: NSRect(x: 0, y: 0, width: 0, height: 30))
-        self.configureStackView()
+		super.init(frame: NSRect(x: 0, y: 0, width: frameRect.width, height: 30))
+		self.configureStackView()
         self.configureUIElements()
+		self.registerForNotifications()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         self.configureStackView()
         self.configureUIElements()
+		self.registerForNotifications()
     }
+	
+	convenience init(frame: NSRect, shouldLoadHelper: Bool) {
+		self.init(frame: frame)
+		if shouldLoadHelper {
+			self.helper = NowPlayingHelper()
+		}
+	}
     
     /// Configuration
     private func configureStackView() {
-        stackView.alignment = .centerY
-        stackView.distribution = .fill
-        stackView.spacing = 6
+		stackView.orientation = .horizontal
+		stackView.alignment = .centerY
+        stackView.distribution = .fillProportionally
         addSubview(stackView)
-        stackView.snp.makeConstraints({ m in
-            m.left.top.right.bottom.equalToSuperview()
-        })
+		stackView.edgesToSuperview()
     }
     
-    private func configureUIElements() {
+	@objc private func _configureUIElements() {
+		DispatchQueue.main.async { [weak self] in
+			self?.configureUIElements()
+		}
+	}
+	private func configureUIElements() {
         removeArrangedSubviews()
+		defer {
+			addArrangedSubviews()
+			reloadNowPlayingData()
+		}
         switch style {
         case .default, .onlyInfo:
-            guard itemView == nil else { break }
-            itemView = NowPlayingItemView(frame: .zero, leftToRight: true)
-            itemView?.nowPLayingItem = item
+            guard itemView == nil else {
+				break
+			}
+			itemView = NowPlayingItemView(leftToRight: true)
             setupGestureHandlers()
         case .playPause:
-            guard playPauseButton == nil else { break }
+            guard playPauseButton == nil else {
+				break
+			}
             let icon = NSImage(named: item?.isPlaying ?? false ? pauseIconName : playIconName)!
-            playPauseButton = NSButton(image: icon, target: self, action: #selector(togglePlayPause))
-            playPauseButton?.bezelColor = .black
-            playPauseButton?.snp.makeConstraints({ m in
-                m.width.equalTo(32)
-            })
+			playPauseButton = NSButton.build(image: icon, target: self, action: #selector(togglePlayPause))
         }
-        addArrangedSubviews()
     }
     
     private func removeArrangedSubviews() {
@@ -124,10 +158,13 @@ class NowPlayingView: PKView {
         switch style {
         case .default:
             views = [previousButton, itemView!, nextButton]
+			stackView.spacing = 8
         case .onlyInfo:
             views = [itemView!]
+			stackView.spacing = 0
         case .playPause:
             views = [previousButton, playPauseButton!, nextButton]
+			stackView.spacing = 22
         }
         for view in views {
             stackView.addArrangedSubview(view)
@@ -148,7 +185,12 @@ class NowPlayingView: PKView {
     }
     
     /// Update
-    private func updateContentViews() {
+	@objc private func _updateContentViews() {
+		DispatchQueue.main.async { [weak self] in
+			self?.updateContentViews()
+		}
+	}
+    internal func updateContentViews() {
         guard !shouldHideWidget else {
             removeArrangedSubviews()
             return
@@ -158,27 +200,36 @@ class NowPlayingView: PKView {
         }
         switch style {
         case .default, .onlyInfo:
-            itemView?.nowPLayingItem = item
+			itemView?.updateUIState(for: item)
         case .playPause:
             playPauseButton?.image = NSImage(named: item?.isPlaying ?? false ? pauseIconName : playIconName)!
         }
     }
+	internal func reloadNowPlayingData(async: Bool = false) {
+		if async {
+			DispatchQueue.main.async { [weak self] in
+				self?.itemView?.updateUIState(for: self?.item)
+			}
+		} else {
+			itemView?.updateUIState(for: item)
+		}
+	}
     
     /// Handlers
     @objc private func togglePlayPause() {
-		NowPlayingHelper.shared.togglePlayingState()
+		helper?.togglePlayingState()
     }
     
     @objc private func skipToNextItem() {
-        NowPlayingHelper.shared.skipToNextTrack()
+        helper?.skipToNextTrack()
     }
     
     @objc private func skipToPreviousItem() {
-        NowPlayingHelper.shared.skipToPreviousTrack()
+        helper?.skipToPreviousTrack()
     }
     
     override func didLongPressHandler() {
-        guard let id = item?.appBundleIdentifier else {
+		guard let id = item?.client?.bundleIdentifier() else {
             return
         }
         NSWorkspace.shared.launchApplication(

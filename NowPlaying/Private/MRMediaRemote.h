@@ -9,12 +9,13 @@
 #import <Foundation/Foundation.h>
 
 typedef void (^MRMediaRemoteGetNowPlayingInfoBlock)(NSDictionary *info);
-typedef void (^MRMediaRemoteGetNowPlayingClientBlock)(id clientObj);
+typedef void (^MRMediaRemoteGetNowPlayingClientBlock)(MRClient *clientObj);
+typedef void (^MRMediaRemoteGetNowPlayingClientsBlock)(NSArray *clients);
 typedef void (^MRMediaRemoteGetNowPlayingApplicationIsPlayingBlock)(BOOL playing);
 
 extern void MRMediaRemoteRegisterForNowPlayingNotifications(dispatch_queue_t queue);
 extern void MRMediaRemoteGetNowPlayingClient(dispatch_queue_t queue, MRMediaRemoteGetNowPlayingClientBlock block);
-extern void MRMediaRemoteGetNowPlayingClients(dispatch_queue_t queue, MRMediaRemoteGetNowPlayingClientBlock block);
+extern void MRMediaRemoteGetNowPlayingClients(dispatch_queue_t queue, MRMediaRemoteGetNowPlayingClientsBlock block);
 extern void MRMediaRemoteGetNowPlayingInfo(dispatch_queue_t queue, MRMediaRemoteGetNowPlayingInfoBlock block);
 extern void MRMediaRemoteGetNowPlayingApplicationIsPlaying(dispatch_queue_t queue, MRMediaRemoteGetNowPlayingApplicationIsPlayingBlock block);
 
@@ -40,4 +41,3 @@ typedef enum {
 } MRCommand;
 
 extern Boolean MRMediaRemoteSendCommand(MRCommand command, id userInfo);
-

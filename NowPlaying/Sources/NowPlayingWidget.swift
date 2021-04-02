@@ -12,40 +12,23 @@ import PockKit
 import Defaults
 				        
 class NowPlayingWidget: PKWidget {
-    var identifier: NSTouchBarItem.Identifier = NSTouchBarItem.Identifier(rawValue: "NowPlayingWidget")
+	
+    static var identifier: NSTouchBarItem.Identifier = NSTouchBarItem.Identifier(rawValue: "NowPlayingWidget")
     var customizationLabel: String = "Now Playing"
     var view: NSView!
-
-    private var nowPlayingView: NowPlayingView = NowPlayingView(frame: .zero)
-    
-    required init() {
-        self.updateNowPLayingItemView()
-        self.registerForNotifications()
-        self.view = nowPlayingView
+	
+	required init() {
+		view = NowPlayingView(frame: NSRect(x: 0, y: 0, width: 120, height: 30), shouldLoadHelper: true)
     }
-    
-    private func registerForNotifications() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateNowPLayingItemView),
-                                               name: NowPlayingHelper.kNowPlayingItemDidChange,
-                                               object: nil
-        )
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateNowPlayingStyle),
-                                               name: .didChangeNowPlayingWidgetStyle,
-                                               object: nil
-        )
-    }
-    
-    @objc private func updateNowPLayingItemView() {
-        nowPlayingView.item = NowPlayingHelper.shared.nowPlayingItem
-    }
-    
-    @objc private func updateNowPlayingStyle() {
-        nowPlayingView.style = Defaults[.nowPlayingWidgetStyle]
-    }
+	
+	func viewWillAppear() {
+		(view as? NowPlayingView)?.reloadNowPlayingData(async: true)
+	}
     
     deinit {
+		NSLog("[NOW_PLAYING]: NowPlayingWidget - deinit")
+		view.removeFromSuperview()
+		view = nil
         NotificationCenter.default.removeObserver(self)
     }
         

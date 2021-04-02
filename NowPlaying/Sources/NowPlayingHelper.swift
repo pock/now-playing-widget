@@ -13,16 +13,17 @@ import Defaults
 class NowPlayingHelper {
 	
 	/// Core
-	public static let shared: NowPlayingHelper = NowPlayingHelper()
 	public static let kNowPlayingItemDidChange: Notification.Name = Notification.Name(rawValue: "kNowPlayingItemDidChange")
 	
 	/// Data
-	public let nowPlayingItem: NowPlayingItem = NowPlayingItem()
+	public static private(set) var currentNowPlayingItem: NowPlayingItem?
 	
 	/// Artwork
 	private var latestArtworkTask: URLSessionTask?
 	
-	private init() {
+	internal init() {
+		NSLog("[NOW_PLAYING]: NowPlayingHelper - init")
+		NowPlayingHelper.currentNowPlayingItem = NowPlayingItem()
 		MRMediaRemoteRegisterForNowPlayingNotifications(DispatchQueue.global(qos: .utility))
 		registerForNotifications()
 		updateCurrentPlayingApp()
@@ -59,42 +60,28 @@ class NowPlayingHelper {
 	}
 	
 	@objc private func updateCurrentPlayingApp() {
-		MRMediaRemoteGetNowPlayingClients(DispatchQueue.global(qos: .utility), { [weak self] clients in
-			if let info = (clients as? [Any])?.last {
-				if let appBundleIdentifier = MRNowPlayingClientGetBundleIdentifier(info) {
-					self?.nowPlayingItem.appBundleIdentifier = appBundleIdentifier
-				}else if let appBundleIdentifier = MRNowPlayingClientGetParentAppBundleIdentifier(info) {
-					self?.nowPlayingItem.appBundleIdentifier = appBundleIdentifier
-				}else {
-					self?.nowPlayingItem.appBundleIdentifier = nil
-				}
-			}else {
-				self?.nowPlayingItem.appBundleIdentifier = nil
-				self?.nowPlayingItem.isPlaying = false
-				self?.nowPlayingItem.album  = nil
-				self?.nowPlayingItem.artist = nil
-				self?.nowPlayingItem.title  = nil
-			}
+		MRMediaRemoteGetNowPlayingClient(DispatchQueue.global(qos: .utility), { client in
+			NowPlayingHelper.currentNowPlayingItem?.client = client
 			NotificationCenter.default.post(name: NowPlayingHelper.kNowPlayingItemDidChange, object: nil)
 		})
 	}
 	
 	@objc private func updateMediaContent() {
 		MRMediaRemoteGetNowPlayingInfo(DispatchQueue.global(qos: .utility), { [weak self] info in
-			self?.nowPlayingItem.title  = info?[kMRMediaRemoteNowPlayingInfoTitle]  as? String
-			self?.nowPlayingItem.album  = info?[kMRMediaRemoteNowPlayingInfoAlbum]  as? String
-			self?.nowPlayingItem.artist = info?[kMRMediaRemoteNowPlayingInfoArtist] as? String
+			NowPlayingHelper.currentNowPlayingItem?.title  = info?[kMRMediaRemoteNowPlayingInfoTitle]  as? String
+			NowPlayingHelper.currentNowPlayingItem?.album  = info?[kMRMediaRemoteNowPlayingInfoAlbum]  as? String
+			NowPlayingHelper.currentNowPlayingItem?.artist = info?[kMRMediaRemoteNowPlayingInfoArtist] as? String
 			if info == nil {
-				self?.nowPlayingItem.isPlaying = false
-			}else {
+				NowPlayingHelper.currentNowPlayingItem?.isPlaying = false
+			} else {
 				if Defaults[.showMediaArtwork] {
-					self?.fetchArtwork(for: self?.nowPlayingItem) { [weak self] image in
-						self?.nowPlayingItem.artwork = image
+					self?.fetchArtwork(for: NowPlayingHelper.currentNowPlayingItem) { image in
+						NowPlayingHelper.currentNowPlayingItem?.artwork = image
 						NotificationCenter.default.post(name: NowPlayingHelper.kNowPlayingItemDidChange, object: nil)
 					}
-				}else {
+				} else {
 					self?.latestArtworkTask?.cancel()
-					self?.nowPlayingItem.artwork = nil
+					NowPlayingHelper.currentNowPlayingItem?.artwork = nil
 					NotificationCenter.default.post(name: NowPlayingHelper.kNowPlayingItemDidChange, object: nil)
 				}
 			}
@@ -102,17 +89,19 @@ class NowPlayingHelper {
 	}
 	
 	@objc private func updateCurrentPlayingState() {
-		MRMediaRemoteGetNowPlayingApplicationIsPlaying(DispatchQueue.global(qos: .utility), {[weak self] isPlaying in
-			if self?.nowPlayingItem.appBundleIdentifier == nil {
-				self?.nowPlayingItem.isPlaying = false
-			}else {
-				self?.nowPlayingItem.isPlaying = isPlaying
+		MRMediaRemoteGetNowPlayingApplicationIsPlaying(DispatchQueue.global(qos: .utility), { isPlaying in
+			if NowPlayingHelper.currentNowPlayingItem?.client == nil {
+				NowPlayingHelper.currentNowPlayingItem?.isPlaying = false
+			} else {
+				NowPlayingHelper.currentNowPlayingItem?.isPlaying = isPlaying
 			}
 			NotificationCenter.default.post(name: NowPlayingHelper.kNowPlayingItemDidChange, object: nil)
 		})
 	}
 	
 	deinit {
+		NSLog("[NOW_PLAYING]: NowPlayingHelper - deinit")
+		NowPlayingHelper.currentNowPlayingItem = nil
 		NotificationCenter.default.removeObserver(self)
 	}
 	
@@ -174,7 +163,7 @@ extension NowPlayingHelper {
 							completion(NSImage(data: data))
 						})
 						self?.latestArtworkTask?.resume()
-					}else {
+					} else {
 						completion(nil)
 					}
 				}

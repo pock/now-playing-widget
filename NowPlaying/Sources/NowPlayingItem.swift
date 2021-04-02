@@ -11,12 +11,12 @@ import AppKit
 
 class NowPlayingItem {
     /// Data
-    public var appBundleIdentifier: String?
-    public var title:               String?
-    public var album:               String?
-    public var artist:              String?
-	public var artwork:				NSImage?
-    public var isPlaying:           Bool = false
+    public var client: 	  MRClient?
+    public var title:     String?
+    public var album:     String?
+    public var artist:    String?
+	public var artwork:	  NSImage?
+    public var isPlaying: Bool = false
 	/// Compound
 	public var searchTerm: String? {
 		if let title = title {

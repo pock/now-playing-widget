@@ -26,77 +26,71 @@ class NowPlayingItemView: PKDetailView {
     public var didLongPress: (() -> Void)?
     
     /// Data
-    public var nowPLayingItem: NowPlayingItem? {
-        didSet {
-            self.updateContent()
-        }
-    }
-    
+    private var nowPLayingItem: NowPlayingItem?
+	
     override func didLoad() {
-        titleView.numberOfLoop    = 3
+		canScrollTitle = true
+		canScrollSubtitle = true
+        titleView.numberOfLoop = 3
         subtitleView.numberOfLoop = 1
+		updateUIState(for: nil)
         super.didLoad()
     }
-    
-    private func updateContent() {
-        
-        var appBundleIdentifier: String = self.nowPLayingItem?.appBundleIdentifier ?? ""
-        
-        switch (appBundleIdentifier) {
-        case "com.apple.WebKit.WebContent":
-            appBundleIdentifier = "com.apple.Safari"
-        default:
-            break
-        }
-        
-        DispatchQueue.main.async { [weak self] in
-			
-			var title  = self?.nowPLayingItem?.title  ?? ""
-			var artist = self?.nowPLayingItem?.artist ?? ""
-			
-			if appBundleIdentifier.isEmpty {
-				if #available(OSX 10.15, *) {
-					appBundleIdentifier = "com.apple.Music"
-				}else {
-					appBundleIdentifier = "com.apple.iTunes"
-				}
-				title  = "Tap here"
-				artist = "To play music"
-			}else {
-				if title.isEmpty && artist.isEmpty {
-					let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: appBundleIdentifier)
-					title  = path?.split(separator: "/").last?.replacingOccurrences(of: ".app", with: "") ?? "Missing title"
-					artist = "Unknown artist"
-				}
+	
+	internal func updateUIState(for item: NowPlayingItem?) {
+		self.nowPLayingItem = item
+		defer {
+			updateForNowPlayingState()
+		}
+		var title: String = ""
+		var artist: String = ""
+		guard let item = self.nowPLayingItem, let client = item.client else {
+			let appBundleIdentifier: String
+			if #available(OSX 10.15, *) {
+				appBundleIdentifier = "com.apple.Music"
+			} else {
+				appBundleIdentifier = "com.apple.iTunes"
 			}
-			
-			if title.isEmpty {
-				title = "Missing title"
+			title = "Tap here"
+			artist = "To play music"
+			if let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: appBundleIdentifier) {
+				imageView.image = NSWorkspace.shared.icon(forFile: path)
+			} else {
+				imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
 			}
-			if artist.isEmpty {
-				artist = "Unknown artist"
+			maxWidth = 50
+			set(title: "Tap here")
+			set(subtitle: "To play music")
+			return
+		}
+		/// Now Playing item info
+		title  = item.title ?? ""
+		artist = item.artist ?? ""
+		/// Now playing Client data
+		if title.isEmpty {
+			title = client.displayName()
+		}
+		if artist.isEmpty {
+			artist = title.isEmpty ? (client.parentApplicationBundleIdentifier() ?? client.bundleIdentifier()) : client.displayName()
+		}
+		if let artwork = item.artwork {
+			imageView.image = artwork
+		}else if let icon = client.appIcon() {
+			imageView.image = icon as? NSImage
+		} else {
+			if let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: client.parentApplicationBundleIdentifier() ?? client.bundleIdentifier()) {
+				imageView.image = NSWorkspace.shared.icon(forFile: path)
+			} else {
+				imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
 			}
-			
-			if let artwork = self?.nowPLayingItem?.artwork {
-				self?.imageView.image = artwork
-			}else {
-				if let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: appBundleIdentifier) {
-					self?.imageView.image = NSWorkspace.shared.icon(forFile: path)
-				}else {
-					self?.imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
-				}
-			}
-            
-            let titleWidth    = (title  as NSString).size(withAttributes: self?.titleView.textFontAttributes    ?? [:]).width
-            let subtitleWidth = (artist as NSString).size(withAttributes: self?.subtitleView.textFontAttributes ?? [:]).width
-            self?.maxWidth = min(max(titleWidth, subtitleWidth), 80)
-            
-            self?.set(title: title)
-            self?.set(subtitle: artist)
-            
-            self?.updateForNowPlayingState()
-        }
-    }
+		}
+		/// Set
+		let titleWidth = (title  as NSString).size(withAttributes: titleView.textFontAttributes).width
+		let subtitleWidth = (artist as NSString).size(withAttributes: subtitleView.textFontAttributes).width
+		maxWidth = min(max(titleWidth, subtitleWidth), 120)
+		set(title: title)
+		set(subtitle: artist)
+	}
     
     private func updateForNowPlayingState() {
         if Defaults[.animateIconWhilePlaying], self.nowPLayingItem?.isPlaying ?? false {
@@ -131,5 +125,15 @@ class NowPlayingItemView: PKDetailView {
     override func didLongPressHandler() {
         self.didLongPress?()
     }
+	
+	override func removeFromSuperview() {
+		super.removeFromSuperview()
+		self.stopBounceAnimation()
+	}
+	
+	override func viewDidMoveToSuperview() {
+		super.viewDidMoveToSuperview()
+		self.updateUIState(for: nowPLayingItem)
+	}
     
 }

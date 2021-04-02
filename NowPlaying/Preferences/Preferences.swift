@@ -13,7 +13,7 @@ extension NSNotification.Name {
 }
 
 extension Defaults.Keys {
-    static let nowPlayingWidgetStyle      = Defaults.Key<NowPlayingWidgetStyle>("nowPlayingWidgetStyle", default: .default)
+	static let nowPlayingWidgetStyle      = Defaults.Key<NowPlayingWidgetStyle>("nowPlayingWidgetStyle", default: .default)
 	static let hideNowPlayingIfNoMedia    = Defaults.Key<Bool>("hideNowPlayingIfNoMedia", default: false)
     static let animateIconWhilePlaying    = Defaults.Key<Bool>("animateIconWhilePlaying", default: true)
 	static let showMediaArtwork			  = Defaults.Key<Bool>("showMediaArtwork",		  default: false)
