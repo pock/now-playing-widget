@@ -69,9 +69,15 @@ class NowPlayingItemView: PKDetailView {
 		/// Now playing Client data
 		if title.isEmpty {
 			title = client.displayName()
+			if title.isEmpty {
+				title = "Missing title"
+			}
 		}
 		if artist.isEmpty {
 			artist = title.isEmpty ? (client.parentApplicationBundleIdentifier() ?? client.bundleIdentifier()) : client.displayName()
+			if artist.isEmpty {
+				artist = "Unknown"
+			}
 		}
 		if let artwork = item.artwork {
 			imageView.image = artwork
