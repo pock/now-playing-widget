@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import Defaults
 import PockKit
 
 class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
@@ -27,7 +26,7 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        switch Defaults[.nowPlayingWidgetStyle] {
+		switch NowPlayingWidgetStyle(rawValue: Preferences[.nowPlayingWidgetStyle]) ?? .default {
         case .default:
             defaultRadioButton.state = .on
         case .onlyInfo:
@@ -40,10 +39,10 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
     }
     
 	private func updateButtonsState() {
-		hideWidgetIfNoMedia.state     = Defaults[.hideNowPlayingIfNoMedia] ? .on : .off
-		animateIconWhilePlaying.state = Defaults[.animateIconWhilePlaying] ? .on : .off
-		showMediaArtwork.state 		  = Defaults[.showMediaArtwork] 	   ? .on : .off
-		invertSwipeGesture.state 	  = Defaults[.invertSwipeGesture] 	   ? .on : .off
+		hideWidgetIfNoMedia.state     = Preferences[.hideNowPlayingIfNoMedia] ? .on : .off
+		animateIconWhilePlaying.state = Preferences[.animateIconWhilePlaying] ? .on : .off
+		showMediaArtwork.state 		  = Preferences[.showMediaArtwork] 	   ? .on : .off
+		invertSwipeGesture.state 	  = Preferences[.invertSwipeGesture] 	   ? .on : .off
 	}
 	
     private func setupImageViewClickGesture() {
@@ -56,24 +55,24 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
         let view = (control as? NSGestureRecognizer)?.view ?? control
         switch view.tag {
         case 0:
-            Defaults[.nowPlayingWidgetStyle] = .default
+			Preferences[.nowPlayingWidgetStyle] = NowPlayingWidgetStyle.default.rawValue
             defaultRadioButton.state   = .on
             onlyInfoRadioButton.state  = .off
             playPauseRadioButton.state = .off
         case 1:
-            Defaults[.nowPlayingWidgetStyle] = .onlyInfo
+			Preferences[.nowPlayingWidgetStyle] = NowPlayingWidgetStyle.onlyInfo.rawValue
             defaultRadioButton.state   = .off
             onlyInfoRadioButton.state  = .on
             playPauseRadioButton.state = .off
         case 2:
-            Defaults[.nowPlayingWidgetStyle] = .playPause
+			Preferences[.nowPlayingWidgetStyle] = NowPlayingWidgetStyle.playPause.rawValue
             defaultRadioButton.state   = .off
             onlyInfoRadioButton.state  = .off
             playPauseRadioButton.state = .on
         default:
             return
         }
-        NotificationCenter.default.post(name: .didChangeNowPlayingWidgetStyle, object: nil)
+		NotificationCenter.default.post(name: Notification.Name(didChangeNowPlayingWidgetStyle), object: nil)
     }
     
     @IBAction private func didChangeCheckboxState(_ button: NSButton?) {
@@ -82,27 +81,27 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
         }
         switch button.tag {
         case 0:
-            Defaults[.hideNowPlayingIfNoMedia] = button.state == .on
+			Preferences[.hideNowPlayingIfNoMedia] = button.state == .on
         case 1:
-            Defaults[.animateIconWhilePlaying] = button.state == .on
-			if Defaults[.showMediaArtwork] {
-				Defaults[.showMediaArtwork] = !Defaults[.animateIconWhilePlaying]
+			Preferences[.animateIconWhilePlaying] = button.state == .on
+			if Preferences[.showMediaArtwork] {
+				Preferences[.showMediaArtwork] = !Preferences[.animateIconWhilePlaying]
 			}
 			updateButtonsState()
-			NotificationCenter.default.post(name: NSNotification.Name(rawValue: kMRMediaRemoteNowPlayingApplicationClientStateDidChange), object: nil)
+			NotificationCenter.default.post(name: .mrPlaybackQueueContentItemsChanged, object: nil)
 		case 2:
-			Defaults[.showMediaArtwork] = button.state == .on
-			if Defaults[.animateIconWhilePlaying] {
-				Defaults[.animateIconWhilePlaying] = !Defaults[.showMediaArtwork]
+			Preferences[.showMediaArtwork] = button.state == .on
+			if Preferences[.animateIconWhilePlaying] {
+				Preferences[.animateIconWhilePlaying] = !Preferences[.showMediaArtwork]
 			}
 			updateButtonsState()
-			NotificationCenter.default.post(name: NSNotification.Name(rawValue: kMRMediaRemoteNowPlayingApplicationClientStateDidChange), object: nil)
+			NotificationCenter.default.post(name: .mrPlaybackQueueContentItemsChanged, object: nil)
 		case 3:
-			Defaults[.invertSwipeGesture] = button.state == .on
+			Preferences[.invertSwipeGesture] = button.state == .on
         default:
             return
         }
-        NotificationCenter.default.post(name: .didChangeNowPlayingWidgetStyle, object: nil)
+        NotificationCenter.default.post(name: Notification.Name(didChangeNowPlayingWidgetStyle), object: nil)
     }
     
 }

@@ -8,101 +8,111 @@
 
 import Foundation
 import AppKit
-import Defaults
 
 class NowPlayingHelper {
 	
-	/// Core
-	public static let kNowPlayingItemDidChange: Notification.Name = Notification.Name(rawValue: "kNowPlayingItemDidChange")
-	
 	/// Data
-	public static private(set) var currentNowPlayingItem: NowPlayingItem?
+	public private(set) var currentNowPlayingItem: NowPlayingItem?
 	
 	/// Artwork
 	private var latestArtworkTask: URLSessionTask?
 	
-	internal init() {
+	/// Ref
+	internal weak var view: NowPlayingView?
+	
+	internal init(forView: NowPlayingView) {
 		NSLog("[NOW_PLAYING]: NowPlayingHelper - init")
-		NowPlayingHelper.currentNowPlayingItem = NowPlayingItem()
-		MRMediaRemoteRegisterForNowPlayingNotifications(DispatchQueue.global(qos: .utility))
+		view = forView
+		currentNowPlayingItem = NowPlayingItem()
 		registerForNotifications()
-		updateCurrentPlayingApp()
-		updateMediaContent()
-		updateCurrentPlayingState()
+		updateCurrentPlayingApp(nil)
+		updateMediaContent(nil)
+		updateCurrentPlayingState(nil)
 	}
 	
 	private func registerForNotifications() {
+		NSLog("[NOW_PLAYING]: NowPlayingHelper - registerForNotifications")
+		MRMediaRemoteRegisterForNowPlayingNotifications(.main)
 		NotificationCenter.default.addObserver(self,
 											   selector: #selector(updateCurrentPlayingApp),
-											   name: NSNotification.Name.mrMediaRemoteNowPlayingApplicationDidChange,
-											   object: nil
-		)
+											   name: Notification.Name(kMRMediaRemoteNowPlayingApplicationClientStateDidChange),
+											   object: nil)
+		NotificationCenter.default.addObserver(self,
+											   selector: #selector(updateCurrentPlayingApp),
+											   name: .mrMediaRemoteNowPlayingApplicationDidChange,
+											   object: nil)
 		NotificationCenter.default.addObserver(self,
 											   selector: #selector(updateMediaContent),
-											   name: NSNotification.Name(rawValue: kMRMediaRemoteNowPlayingApplicationClientStateDidChange),
-											   object: nil
-		)
+											   name: .mrNowPlayingPlaybackQueueChanged,
+											   object: nil)
 		NotificationCenter.default.addObserver(self,
 											   selector: #selector(updateMediaContent),
-											   name: NSNotification.Name.mrNowPlayingPlaybackQueueChanged,
-											   object: nil
-		)
-		NotificationCenter.default.addObserver(self,
-											   selector: #selector(updateMediaContent),
-											   name: NSNotification.Name.mrPlaybackQueueContentItemsChanged,
-											   object: nil
-		)
+											   name: .mrPlaybackQueueContentItemsChanged,
+											   object: nil)
 		NotificationCenter.default.addObserver(self,
 											   selector: #selector(updateCurrentPlayingState),
-											   name: NSNotification.Name.mrMediaRemoteNowPlayingApplicationIsPlayingDidChange,
-											   object: nil
-		)
+											   name: .mrMediaRemoteNowPlayingApplicationIsPlayingDidChange,
+											   object: nil)
 	}
 	
-	@objc private func updateCurrentPlayingApp() {
-		MRMediaRemoteGetNowPlayingClient(DispatchQueue.global(qos: .utility), { client in
-			NowPlayingHelper.currentNowPlayingItem?.client = client
-			NotificationCenter.default.post(name: NowPlayingHelper.kNowPlayingItemDidChange, object: nil)
-		})
+	private func unregisterForNotifications() {
+		MRMediaRemoteUnregisterForNowPlayingNotifications()
+		NotificationCenter.default.removeObserver(self, name: NSNotification.Name(kMRMediaRemoteNowPlayingApplicationClientStateDidChange), object: nil)
+		NotificationCenter.default.removeObserver(self, name: .mrMediaRemoteNowPlayingApplicationDidChange, object: nil)
+		NotificationCenter.default.removeObserver(self, name: .mrNowPlayingPlaybackQueueChanged, object: nil)
+		NotificationCenter.default.removeObserver(self, name: .mrPlaybackQueueContentItemsChanged, object: nil)
+		NotificationCenter.default.removeObserver(self, name: .mrMediaRemoteNowPlayingApplicationIsPlayingDidChange, object: nil)
 	}
 	
-	@objc private func updateMediaContent() {
-		MRMediaRemoteGetNowPlayingInfo(DispatchQueue.global(qos: .utility), { [weak self] info in
-			NowPlayingHelper.currentNowPlayingItem?.title  = info?[kMRMediaRemoteNowPlayingInfoTitle]  as? String
-			NowPlayingHelper.currentNowPlayingItem?.album  = info?[kMRMediaRemoteNowPlayingInfoAlbum]  as? String
-			NowPlayingHelper.currentNowPlayingItem?.artist = info?[kMRMediaRemoteNowPlayingInfoArtist] as? String
+	@objc private func updateCurrentPlayingApp(_ notification: Notification?) {
+		MRMediaRemoteGetNowPlayingClient(.main) { [unowned self] client in
+			self.currentNowPlayingItem?.client = NowPlayingItem.Client(
+				bundleIdentifier: 					client?.bundleIdentifier(),
+				parentApplicationBundleIdentifier:  client?.parentApplicationBundleIdentifier(),
+				displayName: 						client?.displayName()
+			)
+			self.view?.updateContentViews()
+		}
+	}
+	
+	@objc private func updateMediaContent(_ notification: Notification?) {
+		MRMediaRemoteGetNowPlayingInfo(.main) { [unowned self] info in
+			self.currentNowPlayingItem?.title  = info?[kMRMediaRemoteNowPlayingInfoTitle]  as? String
+			self.currentNowPlayingItem?.album  = info?[kMRMediaRemoteNowPlayingInfoAlbum]  as? String
+			self.currentNowPlayingItem?.artist = info?[kMRMediaRemoteNowPlayingInfoArtist] as? String
 			if info == nil {
-				NowPlayingHelper.currentNowPlayingItem?.isPlaying = false
+				self.currentNowPlayingItem?.isPlaying = false
 			} else {
-				if Defaults[.showMediaArtwork] {
-					self?.fetchArtwork(for: NowPlayingHelper.currentNowPlayingItem) { image in
-						NowPlayingHelper.currentNowPlayingItem?.artwork = image
-						NotificationCenter.default.post(name: NowPlayingHelper.kNowPlayingItemDidChange, object: nil)
+				if Preferences[.showMediaArtwork] {
+					self.fetchArtwork(for: self.currentNowPlayingItem) { image in
+						self.currentNowPlayingItem?.artwork = image
+						self.view?.updateContentViews()
 					}
 				} else {
-					self?.latestArtworkTask?.cancel()
-					NowPlayingHelper.currentNowPlayingItem?.artwork = nil
-					NotificationCenter.default.post(name: NowPlayingHelper.kNowPlayingItemDidChange, object: nil)
+					self.latestArtworkTask?.cancel()
+					self.currentNowPlayingItem?.artwork = nil
+					self.view?.updateContentViews()
 				}
 			}
-		})
+		}
 	}
 	
-	@objc private func updateCurrentPlayingState() {
-		MRMediaRemoteGetNowPlayingApplicationIsPlaying(DispatchQueue.global(qos: .utility), { isPlaying in
-			if NowPlayingHelper.currentNowPlayingItem?.client == nil {
-				NowPlayingHelper.currentNowPlayingItem?.isPlaying = false
+	@objc private func updateCurrentPlayingState(_ notification: Notification?) {
+		MRMediaRemoteGetNowPlayingApplicationIsPlaying(.main) { [unowned self] isPlaying in
+			if self.currentNowPlayingItem?.client == nil {
+				self.currentNowPlayingItem?.isPlaying = false
 			} else {
-				NowPlayingHelper.currentNowPlayingItem?.isPlaying = isPlaying
+				self.currentNowPlayingItem?.isPlaying = isPlaying
 			}
-			NotificationCenter.default.post(name: NowPlayingHelper.kNowPlayingItemDidChange, object: nil)
-		})
+			self.view?.updateContentViews()
+		}
 	}
 	
 	deinit {
 		NSLog("[NOW_PLAYING]: NowPlayingHelper - deinit")
-		NowPlayingHelper.currentNowPlayingItem = nil
-		NotificationCenter.default.removeObserver(self)
+		view = nil
+		currentNowPlayingItem = nil
+		unregisterForNotifications()
 	}
 	
 }

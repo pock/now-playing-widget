@@ -10,8 +10,14 @@ import Foundation
 import AppKit
 
 class NowPlayingItem {
+	/// Info
+	struct Client {
+		let bundleIdentifier: String?
+		let parentApplicationBundleIdentifier: String?
+		let displayName: String?
+	}
     /// Data
-    public var client: 	  MRClient?
+    public var client: 	  Client?
     public var title:     String?
     public var album:     String?
     public var artist:    String?

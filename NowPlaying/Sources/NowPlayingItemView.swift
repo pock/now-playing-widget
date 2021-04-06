@@ -9,7 +9,6 @@
 import Foundation
 import AppKit
 import PockKit
-import Defaults
 
 extension String {
     func truncate(length: Int, trailing: String = "…") -> String {
@@ -68,23 +67,21 @@ class NowPlayingItemView: PKDetailView {
 		artist = item.artist ?? ""
 		/// Now playing Client data
 		if title.isEmpty {
-			title = client.displayName()
+			title = client.displayName ?? ""
 			if title.isEmpty {
 				title = "Missing title"
 			}
 		}
 		if artist.isEmpty {
-			artist = title.isEmpty ? (client.parentApplicationBundleIdentifier() ?? client.bundleIdentifier()) : client.displayName()
+			artist = (title.isEmpty ? (client.parentApplicationBundleIdentifier ?? client.bundleIdentifier) : client.displayName) ?? ""
 			if artist.isEmpty {
 				artist = "Unknown"
 			}
 		}
 		if let artwork = item.artwork {
 			imageView.image = artwork
-		}else if let icon = client.appIcon() {
-			imageView.image = icon as? NSImage
 		} else {
-			if let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: client.parentApplicationBundleIdentifier() ?? client.bundleIdentifier()) {
+			if let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: (client.parentApplicationBundleIdentifier ?? client.bundleIdentifier) ?? "") {
 				imageView.image = NSWorkspace.shared.icon(forFile: path)
 			} else {
 				imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
@@ -99,10 +96,8 @@ class NowPlayingItemView: PKDetailView {
 	}
     
     private func updateForNowPlayingState() {
-        if Defaults[.animateIconWhilePlaying], self.nowPLayingItem?.isPlaying ?? false {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: { [weak self] in
-                self?.startBounceAnimation()
-            })
+        if Preferences[.animateIconWhilePlaying], self.nowPLayingItem?.isPlaying ?? false {
+			self.startBounceAnimation()
         }else {
             self.stopBounceAnimation()
         }
@@ -113,7 +108,7 @@ class NowPlayingItemView: PKDetailView {
     }
     
     override open func didSwipeLeftHandler() {
-		if Defaults[.invertSwipeGesture] {
+		if Preferences[.invertSwipeGesture] {
 			self.didSwipeRight?()
 		}else {
 			self.didSwipeLeft?()
@@ -121,7 +116,7 @@ class NowPlayingItemView: PKDetailView {
     }
     
     override open func didSwipeRightHandler() {
-		if Defaults[.invertSwipeGesture] {
+		if Preferences[.invertSwipeGesture] {
 			self.didSwipeLeft?()
 		}else {
 			self.didSwipeRight?()

@@ -6,16 +6,36 @@
 //  Copyright © 2020 Pierluigi Galdi. All rights reserved.
 //
 
-import Defaults
+internal let didChangeNowPlayingWidgetStyle = "didChangeNowPlayingWidgetStyle"
 
-extension NSNotification.Name {
-    static let didChangeNowPlayingWidgetStyle = NSNotification.Name("didChangeNowPlayingWidgetStyle")
-}
-
-extension Defaults.Keys {
-	static let nowPlayingWidgetStyle      = Defaults.Key<NowPlayingWidgetStyle>("nowPlayingWidgetStyle", default: .default)
-	static let hideNowPlayingIfNoMedia    = Defaults.Key<Bool>("hideNowPlayingIfNoMedia", default: false)
-    static let animateIconWhilePlaying    = Defaults.Key<Bool>("animateIconWhilePlaying", default: true)
-	static let showMediaArtwork			  = Defaults.Key<Bool>("showMediaArtwork",		  default: false)
-	static let invertSwipeGesture		  = Defaults.Key<Bool>("invertSwipeGesture",	  default: true)
+internal struct Preferences {
+	internal enum Keys: String {
+		case nowPlayingWidgetStyle
+		case hideNowPlayingIfNoMedia
+		case animateIconWhilePlaying
+		case showMediaArtwork
+		case invertSwipeGesture
+	}
+	static subscript<T>(_ key: Keys) -> T {
+		get {
+			guard let value = UserDefaults.standard.value(forKey: key.rawValue) as? T else {
+				switch key {
+				case .nowPlayingWidgetStyle:
+					return "onlyInfo" as! T
+				case .hideNowPlayingIfNoMedia:
+					return false as! T
+				case .animateIconWhilePlaying:
+					return true as! T
+				case .showMediaArtwork:
+					return false as! T
+				case .invertSwipeGesture:
+					return true as! T
+				}
+			}
+			return value
+		}
+		set {
+			UserDefaults.standard.setValue(newValue, forKey: key.rawValue)
+		}
+	}
 }

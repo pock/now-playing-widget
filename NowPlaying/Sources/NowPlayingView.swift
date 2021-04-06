@@ -7,7 +7,6 @@
 //
 
 import PockKit
-import Defaults
 
 fileprivate let playIconName  = NSImage.touchBarPlayTemplateName
 fileprivate let pauseIconName = NSImage.touchBarPauseTemplateName
@@ -43,7 +42,7 @@ class NowPlayingView: PKView {
     
     /// Core
     private var shouldHideWidget: Bool {
-        if Defaults[.hideNowPlayingIfNoMedia] {
+        if Preferences[.hideNowPlayingIfNoMedia] {
             return item?.client == nil
         }
         return false
@@ -51,57 +50,40 @@ class NowPlayingView: PKView {
     
     /// Styles
     public var style: NowPlayingWidgetStyle {
-		return Defaults[.nowPlayingWidgetStyle]
+		return NowPlayingWidgetStyle(rawValue: Preferences[.nowPlayingWidgetStyle]) ?? .default
     }
     
     /// Data
 	private var helper: NowPlayingHelper?
 	public var item: NowPlayingItem? {
-		return NowPlayingHelper.currentNowPlayingItem
+		return helper?.currentNowPlayingItem
 	}
 	
 	deinit {
 		NSLog("[NOW_PLAYING]: NowPlayingView - deinit")
+		NotificationCenter.default.removeObserver(self, name: Notification.Name(didChangeNowPlayingWidgetStyle), object: nil)
+		helper = nil
 		itemView?.removeFromSuperview()
 		itemView = nil
 		subviews.forEach({ $0.removeFromSuperview() })
-		helper = nil
-		NotificationCenter.default.removeObserver(self)
 	}
     
 	/// Notifications
 	private func registerForNotifications() {
+		NSLog("[NOW_PLAYING]: NowPlayingView - register for notifications")
 		NotificationCenter.default.addObserver(self,
-											   selector: #selector(_updateContentViews),
-											   name: NowPlayingHelper.kNowPlayingItemDidChange,
-											   object: nil
-		)
-		NotificationCenter.default.addObserver(self,
-											   selector: #selector(_configureUIElements),
-											   name: .didChangeNowPlayingWidgetStyle,
-											   object: nil
-		)
+											   selector: #selector(configureUIElements),
+											   name: Notification.Name(didChangeNowPlayingWidgetStyle),
+											   object: nil)
 	}
-	
-    /// Overrides
-    override init(frame frameRect: NSRect) {
-		super.init(frame: NSRect(x: 0, y: 0, width: frameRect.width, height: 30))
-		self.configureStackView()
-        self.configureUIElements()
-		self.registerForNotifications()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        self.configureStackView()
-        self.configureUIElements()
-		self.registerForNotifications()
-    }
 	
 	convenience init(frame: NSRect, shouldLoadHelper: Bool) {
 		self.init(frame: frame)
+		configureStackView()
+		configureUIElements()
 		if shouldLoadHelper {
-			self.helper = NowPlayingHelper()
+			helper = NowPlayingHelper(forView: self)
+			registerForNotifications()
 		}
 	}
     
@@ -114,16 +96,10 @@ class NowPlayingView: PKView {
 		stackView.edgesToSuperview()
     }
     
-	@objc private func _configureUIElements() {
-		DispatchQueue.main.async { [weak self] in
-			self?.configureUIElements()
-		}
-	}
-	private func configureUIElements() {
+	@objc private func configureUIElements() {
         removeArrangedSubviews()
 		defer {
 			addArrangedSubviews()
-			reloadNowPlayingData()
 		}
         switch style {
         case .default, .onlyInfo:
@@ -185,12 +161,7 @@ class NowPlayingView: PKView {
     }
     
     /// Update
-	@objc private func _updateContentViews() {
-		DispatchQueue.main.async { [weak self] in
-			self?.updateContentViews()
-		}
-	}
-    internal func updateContentViews() {
+    @objc internal func updateContentViews() {
         guard !shouldHideWidget else {
             removeArrangedSubviews()
             return
@@ -205,14 +176,8 @@ class NowPlayingView: PKView {
             playPauseButton?.image = NSImage(named: item?.isPlaying ?? false ? pauseIconName : playIconName)!
         }
     }
-	internal func reloadNowPlayingData(async: Bool = false) {
-		if async {
-			DispatchQueue.main.async { [weak self] in
-				self?.itemView?.updateUIState(for: self?.item)
-			}
-		} else {
-			itemView?.updateUIState(for: item)
-		}
+	internal func reloadNowPlayingData() {
+		itemView?.updateUIState(for: item)
 	}
     
     /// Handlers
@@ -221,15 +186,15 @@ class NowPlayingView: PKView {
     }
     
     @objc private func skipToNextItem() {
-        helper?.skipToNextTrack()
+		helper?.skipToNextTrack()
     }
     
     @objc private func skipToPreviousItem() {
-        helper?.skipToPreviousTrack()
+		helper?.skipToPreviousTrack()
     }
     
     override func didLongPressHandler() {
-		guard let id = item?.client?.bundleIdentifier() else {
+		guard let id = item?.client?.bundleIdentifier else {
             return
         }
         NSWorkspace.shared.launchApplication(

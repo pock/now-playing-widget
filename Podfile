@@ -7,6 +7,5 @@ target 'NowPlaying' do
 
   # Pods for NowPlaying
   pod 'PockKit'
-  pod 'Defaults'
 
 end
