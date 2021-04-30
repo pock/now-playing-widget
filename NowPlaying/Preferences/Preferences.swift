@@ -15,6 +15,7 @@ internal struct Preferences {
 		case animateIconWhilePlaying
 		case showMediaArtwork
 		case invertSwipeGesture
+		case defaultPlayer
 	}
 	static subscript<T>(_ key: Keys) -> T {
 		get {
@@ -30,6 +31,12 @@ internal struct Preferences {
 					return false as! T
 				case .invertSwipeGesture:
 					return true as! T
+				case .defaultPlayer:
+					if #available(OSX 10.15, *) {
+						return "com.apple.Music" as! T
+					} else {
+						return "com.apple.iTunes" as! T
+					}
 				}
 			}
 			return value

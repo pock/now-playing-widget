@@ -68,7 +68,14 @@ class NowPlayingHelper {
 	@objc private func updateCurrentPlayingApp(_ notification: Notification?) {
 		MRMediaRemoteGetNowPlayingClient(.main) { [unowned self] client in
 			if client?.bundleIdentifier() == nil && client?.parentApplicationBundleIdentifier() == nil {
-				self.currentNowPlayingItem?.client = nil
+				// Check custom default player
+				let customDefaultPlayerIdentifier: String = Preferences[.defaultPlayer]
+				let displayName = NSWorkspace.shared.applicationName(for: customDefaultPlayerIdentifier)
+				self.currentNowPlayingItem?.client = NowPlayingItem.Client(
+					bundleIdentifier: customDefaultPlayerIdentifier,
+					parentApplicationBundleIdentifier: nil,
+					displayName: displayName
+				)
 			} else {
 				self.currentNowPlayingItem?.client = NowPlayingItem.Client(
 					bundleIdentifier: 					client?.bundleIdentifier(),
@@ -85,18 +92,19 @@ class NowPlayingHelper {
 			self.currentNowPlayingItem?.title  = info?[kMRMediaRemoteNowPlayingInfoTitle]  as? String
 			self.currentNowPlayingItem?.album  = info?[kMRMediaRemoteNowPlayingInfoAlbum]  as? String
 			self.currentNowPlayingItem?.artist = info?[kMRMediaRemoteNowPlayingInfoArtist] as? String
+			defer {
+				self.view?.updateContentViews()
+			}
 			if info == nil {
 				self.currentNowPlayingItem?.isPlaying = false
 			} else {
 				if Preferences[.showMediaArtwork] {
 					self.fetchArtwork(for: self.currentNowPlayingItem) { image in
 						self.currentNowPlayingItem?.artwork = image
-						self.view?.updateContentViews()
 					}
 				} else {
 					self.latestArtworkTask?.cancel()
 					self.currentNowPlayingItem?.artwork = nil
-					self.view?.updateContentViews()
 				}
 			}
 		}
@@ -206,5 +214,11 @@ extension URLSession {
 			completionHandler(data, json, nil)
 		}
 		return task
+	}
+}
+
+extension NSWorkspace {
+	public func applicationName(for bundleIdentifier: String) -> String? {
+		self.urlForApplication(withBundleIdentifier: bundleIdentifier)?.lastPathComponent.replacingOccurrences(of: ".app", with: "")
 	}
 }

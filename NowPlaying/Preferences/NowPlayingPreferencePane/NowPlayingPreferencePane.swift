@@ -41,8 +41,8 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
 	private func updateButtonsState() {
 		hideWidgetIfNoMedia.state     = Preferences[.hideNowPlayingIfNoMedia] ? .on : .off
 		animateIconWhilePlaying.state = Preferences[.animateIconWhilePlaying] ? .on : .off
-		showMediaArtwork.state 		  = Preferences[.showMediaArtwork] 	   ? .on : .off
-		invertSwipeGesture.state 	  = Preferences[.invertSwipeGesture] 	   ? .on : .off
+		showMediaArtwork.state 		  = Preferences[.showMediaArtwork] 	   	  ? .on : .off
+		invertSwipeGesture.state 	  = Preferences[.invertSwipeGesture] 	  ? .on : .off
 	}
 	
     private func setupImageViewClickGesture() {

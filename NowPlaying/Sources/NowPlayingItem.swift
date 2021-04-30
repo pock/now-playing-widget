@@ -17,11 +17,11 @@ class NowPlayingItem {
 		let displayName: String?
 	}
     /// Data
-    public var client: 	  Client?
-    public var title:     String?
-    public var album:     String?
-    public var artist:    String?
-	public var artwork:	  NSImage?
+    public var client: Client!
+	public var title: String?
+    public var album: String?
+	public var artist: String?
+	public var artwork:	NSImage?
     public var isPlaying: Bool = false
 	/// Compound
 	public var searchTerm: String? {

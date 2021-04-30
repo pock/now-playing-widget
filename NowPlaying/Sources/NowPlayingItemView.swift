@@ -41,8 +41,6 @@ class NowPlayingItemView: PKDetailView {
 		defer {
 			updateForNowPlayingState()
 		}
-		var title: String = ""
-		var artist: String = ""
 		guard let item = self.nowPLayingItem, let client = item.client else {
 			let appBundleIdentifier: String
 			if #available(OSX 10.15, *) {
@@ -50,34 +48,17 @@ class NowPlayingItemView: PKDetailView {
 			} else {
 				appBundleIdentifier = "com.apple.iTunes"
 			}
-			title = "Tap here"
-			artist = "To play music"
 			if let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: appBundleIdentifier) {
 				imageView.image = NSWorkspace.shared.icon(forFile: path)
 			} else {
 				imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
 			}
 			maxWidth = 50
-			set(title: "Tap here")
-			set(subtitle: "To play music")
+			set(title: NSWorkspace.shared.applicationName(for: appBundleIdentifier))
+			subtitleView.isHidden = true
 			return
 		}
-		/// Now Playing item info
-		title  = item.title ?? ""
-		artist = item.artist ?? ""
-		/// Now playing Client data
-		if title.isEmpty {
-			title = client.displayName ?? ""
-			if title.isEmpty {
-				title = "Missing title"
-			}
-		}
-		if artist.isEmpty {
-			artist = (title.isEmpty ? (client.parentApplicationBundleIdentifier ?? client.bundleIdentifier) : client.displayName) ?? ""
-			if artist.isEmpty {
-				artist = "Unknown"
-			}
-		}
+		// MARK: Artwork
 		if let artwork = item.artwork {
 			imageView.image = artwork
 		} else {
@@ -87,12 +68,25 @@ class NowPlayingItemView: PKDetailView {
 				imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
 			}
 		}
-		/// Set
-		let titleWidth = (title  as NSString).size(withAttributes: titleView.textFontAttributes).width
-		let subtitleWidth = (artist as NSString).size(withAttributes: subtitleView.textFontAttributes).width
-		maxWidth = min(max(titleWidth, subtitleWidth), 120)
+		// TODO: Localize hardcoded strings
+		// MARK: Title
+		var title = item.title ?? (item.artist == nil ? client.displayName : "Missing title") ?? "Missing title"
+		if title.isEmpty {
+			title = "Missing title"
+		}
+		let titleWidth = (title as NSString).size(withAttributes: titleView.textFontAttributes).width
+		maxWidth = min(titleWidth, 120)
 		set(title: title)
-		set(subtitle: artist)
+		
+		// MARK: Subtitle
+		if let subtitle = item.artist ?? (item.title != nil ? client.displayName : nil), subtitle.isEmpty == false {
+			let subtitleWidth = (subtitle as NSString).size(withAttributes: subtitleView.textFontAttributes).width
+			maxWidth = min(max(titleWidth, subtitleWidth), 120)
+			subtitleView.isHidden = false
+			set(subtitle: subtitle)
+		} else {
+			subtitleView.isHidden = true
+		}
 	}
     
     private func updateForNowPlayingState() {
