@@ -71,10 +71,7 @@ class NowPlayingView: PKView {
 	/// Notifications
 	private func registerForNotifications() {
 		NSLog("[NOW_PLAYING]: NowPlayingView - register for notifications")
-		NotificationCenter.default.addObserver(self,
-											   selector: #selector(configureUIElements),
-											   name: Notification.Name(didChangeNowPlayingWidgetStyle),
-											   object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(configureUIElements), name: Notification.Name(didChangeNowPlayingWidgetStyle), object: nil)
 	}
 	
 	convenience init(frame: NSRect, shouldLoadHelper: Bool) {

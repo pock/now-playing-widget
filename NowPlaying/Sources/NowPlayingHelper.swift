@@ -56,6 +56,7 @@ class NowPlayingHelper {
 	}
 	
 	private func unregisterForNotifications() {
+		NSLog("[NOW_PLAYING]: NowPlayingHelper - un-registerForNotifications")
 		MRMediaRemoteUnregisterForNowPlayingNotifications()
 		NotificationCenter.default.removeObserver(self, name: NSNotification.Name(kMRMediaRemoteNowPlayingApplicationClientStateDidChange), object: nil)
 		NotificationCenter.default.removeObserver(self, name: .mrMediaRemoteNowPlayingApplicationDidChange, object: nil)
@@ -66,11 +67,15 @@ class NowPlayingHelper {
 	
 	@objc private func updateCurrentPlayingApp(_ notification: Notification?) {
 		MRMediaRemoteGetNowPlayingClient(.main) { [unowned self] client in
-			self.currentNowPlayingItem?.client = NowPlayingItem.Client(
-				bundleIdentifier: 					client?.bundleIdentifier(),
-				parentApplicationBundleIdentifier:  client?.parentApplicationBundleIdentifier(),
-				displayName: 						client?.displayName()
-			)
+			if client?.bundleIdentifier() == nil && client?.parentApplicationBundleIdentifier() == nil {
+				self.currentNowPlayingItem?.client = nil
+			} else {
+				self.currentNowPlayingItem?.client = NowPlayingItem.Client(
+					bundleIdentifier: 					client?.bundleIdentifier(),
+					parentApplicationBundleIdentifier:  client?.parentApplicationBundleIdentifier(),
+					displayName: 						client?.displayName()
+				)
+			}
 			self.view?.updateContentViews()
 		}
 	}
