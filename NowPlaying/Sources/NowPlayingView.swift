@@ -179,7 +179,11 @@ class NowPlayingView: PKView {
     
     /// Handlers
     @objc private func togglePlayPause() {
-		helper?.togglePlayingState()
+		if NSWorkspace.shared.runningApplications.compactMap({ $0.bundleIdentifier }).contains(item?.client.bundleIdentifier), item?.title != nil {
+			helper?.togglePlayingState()
+		} else {
+			didLongPressHandler()
+		}
     }
     
     @objc private func skipToNextItem() {

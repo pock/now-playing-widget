@@ -22,6 +22,15 @@ class NowPlayingHelper {
 	
 	internal init(forView: NowPlayingView) {
 		NSLog("[NOW_PLAYING]: NowPlayingHelper - init")
+		if let _: String = Preferences[.defaultPlayer] {
+			// nothing to do here
+		} else {
+			if #available(OSX 10.15, *) {
+				Preferences[.defaultPlayer] = "com.apple.Music"
+			} else {
+				Preferences[.defaultPlayer] = "com.apple.iTunes"
+			}
+		}
 		view = forView
 		currentNowPlayingItem = NowPlayingItem()
 		registerForNotifications()
@@ -71,16 +80,19 @@ class NowPlayingHelper {
 				// Check custom default player
 				let customDefaultPlayerIdentifier: String = Preferences[.defaultPlayer]
 				let displayName = NSWorkspace.shared.applicationName(for: customDefaultPlayerIdentifier)
+				let icon = NSWorkspace.shared.applicationIcon(for: customDefaultPlayerIdentifier, fallbackFileType: "mp3")
 				self.currentNowPlayingItem?.client = NowPlayingItem.Client(
 					bundleIdentifier: customDefaultPlayerIdentifier,
 					parentApplicationBundleIdentifier: nil,
-					displayName: displayName
+					displayName: displayName,
+					icon: icon
 				)
 			} else {
 				self.currentNowPlayingItem?.client = NowPlayingItem.Client(
 					bundleIdentifier: 					client?.bundleIdentifier(),
 					parentApplicationBundleIdentifier:  client?.parentApplicationBundleIdentifier(),
-					displayName: 						client?.displayName()
+					displayName: 						client?.displayName(),
+					icon: NSWorkspace.shared.applicationIcon(for: client?.parentApplicationBundleIdentifier() ?? client?.bundleIdentifier(), fallbackFileType: "mp3")
 				)
 			}
 			self.view?.updateContentViews()
@@ -220,5 +232,13 @@ extension URLSession {
 extension NSWorkspace {
 	public func applicationName(for bundleIdentifier: String) -> String? {
 		self.urlForApplication(withBundleIdentifier: bundleIdentifier)?.lastPathComponent.replacingOccurrences(of: ".app", with: "")
+	}
+	public func applicationIcon(for bundleIdentifier: String?, fallbackFileType: String? = nil) -> NSImage? {
+		if let bundleIdentifier = bundleIdentifier,
+		   let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: bundleIdentifier) {
+			return NSWorkspace.shared.icon(forFile: path)
+		} else {
+			return NSWorkspace.shared.icon(forFileType: fallbackFileType ?? "pock")
+		}
 	}
 }

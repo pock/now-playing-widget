@@ -42,17 +42,8 @@ class NowPlayingItemView: PKDetailView {
 			updateForNowPlayingState()
 		}
 		guard let item = self.nowPLayingItem, let client = item.client else {
-			let appBundleIdentifier: String
-			if #available(OSX 10.15, *) {
-				appBundleIdentifier = "com.apple.Music"
-			} else {
-				appBundleIdentifier = "com.apple.iTunes"
-			}
-			if let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: appBundleIdentifier) {
-				imageView.image = NSWorkspace.shared.icon(forFile: path)
-			} else {
-				imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
-			}
+			let appBundleIdentifier: String = Preferences[.defaultPlayer]
+			imageView.image = NSWorkspace.shared.applicationIcon(for: appBundleIdentifier, fallbackFileType: "mp3")
 			maxWidth = 50
 			set(title: NSWorkspace.shared.applicationName(for: appBundleIdentifier))
 			subtitleView.isHidden = true
@@ -62,11 +53,7 @@ class NowPlayingItemView: PKDetailView {
 		if let artwork = item.artwork {
 			imageView.image = artwork
 		} else {
-			if let path = NSWorkspace.shared.absolutePathForApplication(withBundleIdentifier: (client.parentApplicationBundleIdentifier ?? client.bundleIdentifier) ?? "") {
-				imageView.image = NSWorkspace.shared.icon(forFile: path)
-			} else {
-				imageView.image = NSWorkspace.shared.icon(forFileType: "mp3")
-			}
+			imageView.image = client.icon
 		}
 		// TODO: Localize hardcoded strings
 		// MARK: Title

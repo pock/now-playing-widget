@@ -13,7 +13,11 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
     
     static var nibName: NSNib.Name = "NowPlayingPreferencePane"
     
-    /// UI Elements
+    // MARK: UI Elements
+	
+	@IBOutlet private weak var defaultApplicationIcon: NSImageView!
+	@IBOutlet private weak var defaultApplicationName: NSTextField!
+	
     @IBOutlet private weak var imagesStackView:         NSStackView!
     @IBOutlet private weak var defaultRadioButton:      NSButton!
     @IBOutlet private weak var onlyInfoRadioButton:     NSButton!
@@ -34,10 +38,17 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
         case .playPause:
             playPauseRadioButton.state = .on
         }
+		updateDefaultApplicationUIElements()
         updateButtonsState()
         setupImageViewClickGesture()
     }
     
+	private func updateDefaultApplicationUIElements() {
+		let bundleIdentifier: String = Preferences[.defaultPlayer]
+		defaultApplicationIcon.image = NSWorkspace.shared.applicationIcon(for: bundleIdentifier)
+		defaultApplicationName.stringValue = NSWorkspace.shared.applicationName(for: bundleIdentifier) ?? ""
+	}
+	
 	private func updateButtonsState() {
 		hideWidgetIfNoMedia.state     = Preferences[.hideNowPlayingIfNoMedia] ? .on : .off
 		animateIconWhilePlaying.state = Preferences[.animateIconWhilePlaying] ? .on : .off
@@ -50,6 +61,30 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
             $0.addGestureRecognizer(NSClickGestureRecognizer(target: self, action: #selector(didSelectRadioButton(_:))))
         })
     }
+	
+	@IBAction private func didSelectChooseDefaultApplicationButton(_ control: Any?) {
+		guard let window = self.view.window else {
+			return
+		}
+		let openPanel = NSOpenPanel()
+		openPanel.directoryURL = FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first!
+		openPanel.canChooseDirectories = false
+		openPanel.canChooseFiles = true
+		openPanel.allowsMultipleSelection = false
+		openPanel.allowedFileTypes = ["app"]
+		openPanel.beginSheetModal(for: window, completionHandler: { [weak self] result in
+			if result == NSApplication.ModalResponse.OK {
+				guard let self = self,
+						let pathUrl = openPanel.url,
+						let bundleIdentifier = Bundle(url: pathUrl)?.bundleIdentifier else {
+					return
+				}
+				Preferences[.defaultPlayer] = bundleIdentifier
+				self.updateDefaultApplicationUIElements()
+				NotificationCenter.default.post(name: .mrMediaRemoteNowPlayingApplicationDidChange, object: nil)
+			}
+		})
+	}
     
     @IBAction private func didSelectRadioButton(_ control: AnyObject) {
         let view = (control as? NSGestureRecognizer)?.view ?? control
@@ -72,6 +107,7 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
         default:
             return
         }
+		NotificationCenter.default.post(name: .mrPlaybackQueueContentItemsChanged, object: nil)
 		NotificationCenter.default.post(name: Notification.Name(didChangeNowPlayingWidgetStyle), object: nil)
     }
     
@@ -88,19 +124,18 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
 				Preferences[.showMediaArtwork] = !Preferences[.animateIconWhilePlaying]
 			}
 			updateButtonsState()
-			NotificationCenter.default.post(name: .mrPlaybackQueueContentItemsChanged, object: nil)
 		case 2:
 			Preferences[.showMediaArtwork] = button.state == .on
 			if Preferences[.animateIconWhilePlaying] {
 				Preferences[.animateIconWhilePlaying] = !Preferences[.showMediaArtwork]
 			}
 			updateButtonsState()
-			NotificationCenter.default.post(name: .mrPlaybackQueueContentItemsChanged, object: nil)
 		case 3:
 			Preferences[.invertSwipeGesture] = button.state == .on
         default:
             return
         }
+		NotificationCenter.default.post(name: .mrPlaybackQueueContentItemsChanged, object: nil)
         NotificationCenter.default.post(name: Notification.Name(didChangeNowPlayingWidgetStyle), object: nil)
     }
     

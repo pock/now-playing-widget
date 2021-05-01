@@ -15,6 +15,7 @@ class NowPlayingItem {
 		let bundleIdentifier: String?
 		let parentApplicationBundleIdentifier: String?
 		let displayName: String?
+		let icon: NSImage?
 	}
     /// Data
     public var client: Client!
