@@ -75,7 +75,10 @@ class NowPlayingHelper {
 	}
 	
 	@objc private func updateCurrentPlayingApp(_ notification: Notification?) {
-		MRMediaRemoteGetNowPlayingClient(.main) { [unowned self] client in
+		MRMediaRemoteGetNowPlayingClient(.main) { [weak self] client in
+			guard let self = self else {
+				return
+			}
 			if client?.bundleIdentifier() == nil && client?.parentApplicationBundleIdentifier() == nil {
 				// Check custom default player
 				let customDefaultPlayerIdentifier: String = Preferences[.defaultPlayer]
@@ -100,7 +103,10 @@ class NowPlayingHelper {
 	}
 	
 	@objc private func updateMediaContent(_ notification: Notification?) {
-		MRMediaRemoteGetNowPlayingInfo(.main) { [unowned self] info in
+		MRMediaRemoteGetNowPlayingInfo(.main) { [weak self] info in
+			guard let self = self else {
+				return
+			}
 			self.currentNowPlayingItem?.title  = info?[kMRMediaRemoteNowPlayingInfoTitle]  as? String
 			self.currentNowPlayingItem?.album  = info?[kMRMediaRemoteNowPlayingInfoAlbum]  as? String
 			self.currentNowPlayingItem?.artist = info?[kMRMediaRemoteNowPlayingInfoArtist] as? String
@@ -123,7 +129,10 @@ class NowPlayingHelper {
 	}
 	
 	@objc private func updateCurrentPlayingState(_ notification: Notification?) {
-		MRMediaRemoteGetNowPlayingApplicationIsPlaying(.main) { [unowned self] isPlaying in
+		MRMediaRemoteGetNowPlayingApplicationIsPlaying(.main) { [weak self] isPlaying in
+			guard let self = self else {
+				return
+			}
 			if self.currentNowPlayingItem?.client == nil {
 				self.currentNowPlayingItem?.isPlaying = false
 			} else {

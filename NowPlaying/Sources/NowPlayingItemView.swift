@@ -44,7 +44,7 @@ class NowPlayingItemView: PKDetailView {
 		guard let item = self.nowPLayingItem, let client = item.client else {
 			let appBundleIdentifier: String = Preferences[.defaultPlayer]
 			imageView.image = NSWorkspace.shared.applicationIcon(for: appBundleIdentifier, fallbackFileType: "mp3")
-			maxWidth = 50
+			maxWidth = 160
 			set(title: NSWorkspace.shared.applicationName(for: appBundleIdentifier))
 			subtitleView.isHidden = true
 			return
@@ -61,14 +61,10 @@ class NowPlayingItemView: PKDetailView {
 		if title.isEmpty {
 			title = "Missing title"
 		}
-		let titleWidth = (title as NSString).size(withAttributes: titleView.textFontAttributes).width
-		maxWidth = min(titleWidth, 120)
 		set(title: title)
 		
 		// MARK: Subtitle
 		if let subtitle = item.artist ?? (item.title != nil ? client.displayName : nil), subtitle.isEmpty == false {
-			let subtitleWidth = (subtitle as NSString).size(withAttributes: subtitleView.textFontAttributes).width
-			maxWidth = min(max(titleWidth, subtitleWidth), 120)
 			subtitleView.isHidden = false
 			set(subtitle: subtitle)
 		} else {
