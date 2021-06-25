@@ -43,7 +43,10 @@ class NowPlayingView: PKView {
     /// Core
     private var shouldHideWidget: Bool {
         if Preferences[.hideNowPlayingIfNoMedia] {
-            return item?.client == nil
+            guard let item = item else {
+                return true
+            }
+            return item.client == nil || (item.title == nil && item.album == nil && item.isPlaying == false)
         }
         return false
     }
