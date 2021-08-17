@@ -45,4 +45,16 @@ internal struct Preferences {
 			UserDefaults.standard.setValue(newValue, forKey: key.rawValue)
 		}
 	}
+    static func reset() {
+        Preferences[.nowPlayingWidgetStyle] = "onlyInfo"
+        Preferences[.hideNowPlayingIfNoMedia] = false
+        Preferences[.animateIconWhilePlaying] = true
+        Preferences[.showMediaArtwork] = false
+        Preferences[.invertSwipeGesture] = true
+        if #available(OSX 10.15, *) {
+            Preferences[.defaultPlayer] = "com.apple.Music"
+        } else {
+            Preferences[.defaultPlayer] = "com.apple.iTunes"
+        }
+    }
 }

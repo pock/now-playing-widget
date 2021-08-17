@@ -28,6 +28,13 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
 	@IBOutlet private weak var showMediaArtwork:		NSButton!
 	@IBOutlet private weak var invertSwipeGesture:		NSButton!
     
+    func reset() {
+        Preferences.reset()
+        NotificationCenter.default.post(name: .mrMediaRemoteNowPlayingApplicationDidChange, object: nil)
+        NotificationCenter.default.post(name: .mrPlaybackQueueContentItemsChanged, object: nil)
+        NotificationCenter.default.post(name: Notification.Name(didChangeNowPlayingWidgetStyle), object: nil)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 		switch NowPlayingWidgetStyle(rawValue: Preferences[.nowPlayingWidgetStyle]) ?? .default {

@@ -197,7 +197,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1250;
+				LastUpgradeCheck = 1300;
 				ORGANIZATIONNAME = "Pierluigi Galdi";
 				TargetAttributes = {
 					34A0227323C6632D00A24DA5 = {
@@ -257,7 +257,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy widget to destination folder.\nif [ \"${CONFIGURATION}\" == \"Debug\" ]; then\n  echo \"Copying ${PRODUCT_NAME}.pock to destination folder\"\n  cp -r $TARGET_BUILD_DIR/$PRODUCT_NAME.pock ~/Library/Application\\ Support/Pock/Widgets/\nfi\n";
+			shellScript = "# Copy widget to destination folder.\nif [ \"${CONFIGURATION}\" == \"Debug\" ]; then\n  echo \"Installing ${PRODUCT_NAME}.pock\"\n  rm -rf ~/Application\\ Support/Pock/Widgets/$PRODUCT_NAME.pock\n  rm -rf ~/Downloads/$PRODUCT_NAME.pock\n  cp -r $TARGET_BUILD_DIR/$PRODUCT_NAME.pock ~/Downloads/$PRODUCT_NAME.pock\n  open ~/Downloads/$PRODUCT_NAME.pock\nfi\n";
 		};
 		A1186C9A45A3AECF73E0B766 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

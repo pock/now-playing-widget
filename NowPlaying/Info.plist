@@ -26,5 +26,7 @@
 	<string>Pierluigi Galdi</string>
 	<key>PKWidgetPreferenceClass</key>
 	<string>NowPlaying.NowPlayingPreferencePane</string>
+	<key>CFBundleDisplayName</key>
+	<string>Now Playing</string>
 </dict>
 </plist>
