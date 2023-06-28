@@ -7,6 +7,7 @@
 //
 
 import PockKit
+import AppKit
 
 fileprivate let playIconName  = NSImage.touchBarPlayTemplateName
 fileprivate let pauseIconName = NSImage.touchBarPauseTemplateName
