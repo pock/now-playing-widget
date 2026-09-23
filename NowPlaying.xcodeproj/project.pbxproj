@@ -17,7 +17,6 @@
 		34A0228723C66BE200A24DA5 /* NowPlayingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0228323C66BE100A24DA5 /* NowPlayingHelper.swift */; };
 		8E1F0A0226F0000000A1B2C3 /* NowPlayingAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1F0A0126F0000000A1B2C3 /* NowPlayingAdapter.swift */; };
 		34A0228B23C66D5300A24DA5 /* MediaRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34A0228A23C66D5300A24DA5 /* MediaRemote.framework */; };
-		34A0228C23C66D5300A24DA5 /* MediaRemote.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 34A0228A23C66D5300A24DA5 /* MediaRemote.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		34A0228F23C66DF700A24DA5 /* NowPlayingWidgetStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0228E23C66DF700A24DA5 /* NowPlayingWidgetStyle.swift */; };
 		34A0229123C66E1400A24DA5 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A0229023C66E1400A24DA5 /* Preferences.swift */; };
 		34E6A28925587F21002693EA /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34E6A28825587F21002693EA /* Media.xcassets */; };
@@ -31,7 +30,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				34A0228C23C66D5300A24DA5 /* MediaRemote.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
