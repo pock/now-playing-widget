@@ -15,7 +15,7 @@
 //  `NSAppleEventsUsageDescription` key in the host app's Info.plist).
 //
 //  To keep the cost low, the script never polls on its own:
-//  - requests are only sent while the widget is on screen and screens/system are awake;
+//  - requests are only sent while the widget is on screen, screens/system are awake and the user session is active;
 //  - the polling interval is short only while something is playing;
 //  - playback changes (MediaRemote Darwin notifications, players' distributed notifications)
 //    and user commands trigger an immediate refresh.
@@ -104,6 +104,7 @@ internal class NowPlayingAdapter {
 	private var pollTimer: Timer?
 	private var isSystemAsleep: Bool = false
 	private var areScreensAsleep: Bool = false
+	private var isSessionInactive: Bool = false
 	private var sleepObservers: [NSObjectProtocol] = []
 	private var refreshObservers: [NSObjectProtocol] = []
 	private var notifyTokens: [Int32] = []
@@ -282,7 +283,7 @@ extension NowPlayingAdapter {
 extension NowPlayingAdapter {
 
 	private var shouldPoll: Bool {
-		return isStopped == false && isActive && isSystemAsleep == false && areScreensAsleep == false
+		return isStopped == false && isActive && isSystemAsleep == false && areScreensAsleep == false && isSessionInactive == false
 	}
 
 	private func updatePollingState() {
@@ -365,7 +366,10 @@ extension NowPlayingAdapter {
 			observe(NSWorkspace.willSleepNotification, { $0.isSystemAsleep = true }),
 			observe(NSWorkspace.didWakeNotification, { $0.isSystemAsleep = false }),
 			observe(NSWorkspace.screensDidSleepNotification, { $0.areScreensAsleep = true }),
-			observe(NSWorkspace.screensDidWakeNotification, { $0.areScreensAsleep = false })
+			observe(NSWorkspace.screensDidWakeNotification, { $0.areScreensAsleep = false }),
+			// Fast user switching: Pock keeps running (and its views stay in the Touch Bar window) in the background session
+			observe(NSWorkspace.sessionDidResignActiveNotification, { $0.isSessionInactive = true }),
+			observe(NSWorkspace.sessionDidBecomeActiveNotification, { $0.isSessionInactive = false })
 		]
 	}
 
