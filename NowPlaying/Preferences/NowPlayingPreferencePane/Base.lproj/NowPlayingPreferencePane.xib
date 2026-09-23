@@ -12,6 +12,7 @@
                 <outlet property="defaultApplicationIcon" destination="Wi0-8h-KgX" id="7mP-un-LKB"/>
                 <outlet property="defaultApplicationName" destination="whL-Ea-KPV" id="Zh6-gB-NEX"/>
                 <outlet property="defaultRadioButton" destination="hjN-rN-Bz7" id="DuT-sv-3ur"/>
+                <outlet property="fixedWidth" destination="nPf-Wd-4xB" id="nPf-Ol-8kC"/>
                 <outlet property="hideWidgetIfNoMedia" destination="o7u-jf-oUS" id="l0H-jI-rKk"/>
                 <outlet property="imagesStackView" destination="6vs-1x-7qT" id="xRb-qe-4M9"/>
                 <outlet property="invertSwipeGesture" destination="1oC-rO-r9e" id="KhC-0p-wsb"/>
@@ -234,6 +235,19 @@
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
+                                    <connections>
+                                        <action selector="didChangeCheckboxState:" target="-2" id="Inv-Sw-3aC"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="nPf-Wd-4xB">
+                                    <rect key="frame" x="-2" y="-1" width="149" height="18"/>
+                                    <buttonCell key="cell" type="check" title="Fixed width" bezelStyle="regularSquare" imagePosition="left" inset="2" id="nPf-Cl-4xB">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="didChangeCheckboxState:" target="-2" id="nPf-Ac-4xB"/>
+                                    </connections>
                                 </button>
                             </subviews>
                             <visibilityPriorities>
@@ -241,8 +255,10 @@
                                 <integer value="1000"/>
                                 <integer value="1000"/>
                                 <integer value="1000"/>
+                                <integer value="1000"/>
                             </visibilityPriorities>
                             <customSpacing>
+                                <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>

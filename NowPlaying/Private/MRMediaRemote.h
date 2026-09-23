@@ -32,6 +32,7 @@ extern NSString *kMRMediaRemoteNowPlayingApplicationDidChangeNotification;
 extern NSString *kMRMediaRemoteNowPlayingInfoAlbum;
 extern NSString *kMRMediaRemoteNowPlayingInfoArtist;
 extern NSString *kMRMediaRemoteNowPlayingInfoTitle;
+extern NSString *kMRMediaRemoteNowPlayingInfoArtworkData;
 
 typedef enum {
     kMRPlay = 0,

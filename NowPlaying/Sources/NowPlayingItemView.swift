@@ -27,6 +27,9 @@ class NowPlayingItemView: PKDetailView {
     /// Data
     private var nowPLayingItem: NowPlayingItem?
 	
+	/// `PKDetailView.updateConstraint()` adds new constraints every time it's called (i.e. on every text change)
+	private var didSetUpConstraints: Bool = false
+	
     override func didLoad() {
 		canScrollTitle = true
 		canScrollSubtitle = true
@@ -44,16 +47,17 @@ class NowPlayingItemView: PKDetailView {
 		guard let item = self.nowPLayingItem, let client = item.client else {
 			let appBundleIdentifier: String = Preferences[.defaultPlayer]
 			imageView.image = NSWorkspace.shared.applicationIcon(for: appBundleIdentifier, fallbackFileType: "mp3")
-			maxWidth = 160
-			set(title: NSWorkspace.shared.applicationName(for: appBundleIdentifier))
+			if maxWidth != 160 {
+				maxWidth = 160
+			}
+			updateText(NSWorkspace.shared.applicationName(for: appBundleIdentifier), in: titleView)
 			subtitleView.isHidden = true
 			return
 		}
 		// MARK: Artwork
-		if let artwork = item.artwork {
-			imageView.image = artwork
-		} else {
-			imageView.image = client.icon
+		let image = item.artwork ?? client.icon
+		if imageView.image !== image {
+			imageView.image = image
 		}
 		// TODO: Localize hardcoded strings
 		// MARK: Title
@@ -61,19 +65,35 @@ class NowPlayingItemView: PKDetailView {
 		if title.isEmpty {
 			title = "Missing title"
 		}
-		set(title: title)
+		updateText(title, in: titleView)
 		
 		// MARK: Subtitle
 		if let subtitle = item.artist ?? (item.title != nil ? client.displayName : nil), subtitle.isEmpty == false {
 			subtitleView.isHidden = false
-			set(subtitle: subtitle)
+			updateText(subtitle, in: subtitleView)
 		} else {
 			subtitleView.isHidden = true
+		}
+	}
+	
+	/// Setting a text restarts its scrolling animation and re-computes the layout: skip it if unchanged
+	private func updateText(_ text: String?, in textView: ScrollingTextView) {
+		guard textView.text as String? != (text ?? "") else {
+			return
+		}
+		if textView === titleView {
+			set(title: text)
+		} else {
+			set(subtitle: text)
 		}
 	}
     
     private func updateForNowPlayingState() {
         if Preferences[.animateIconWhilePlaying], self.nowPLayingItem?.isPlaying ?? false {
+			// Restarting it on every update makes the icon jump (key used by `PKDetailView`)
+			guard isAnimating == false || imageView.layer?.animation(forKey: "kBounceAnimationKey") == nil else {
+				return
+			}
 			self.startBounceAnimation()
         }else {
             self.stopBounceAnimation()
@@ -104,6 +124,22 @@ class NowPlayingItemView: PKDetailView {
         self.didLongPress?()
     }
 	
+	override func updateConstraint() {
+		if didSetUpConstraints == false {
+			super.updateConstraint()
+			didSetUpConstraints = contentContainer != nil
+		}
+		guard let constraint = contentContainer?.constraints.first(where: { $0.identifier == "contentContainer.width" }) else {
+			return
+		}
+		if Preferences[.fixedWidth], maxWidth > 0 {
+			// Fixed width: always occupy `maxWidth`, regardless of the current title/artist length
+			constraint.constant = maxWidth
+		} else {
+			constraint.constant = maxWidth > 0 ? min(maxWidth, contentWidth) : contentWidth
+		}
+	}
+	
 	override func removeFromSuperview() {
 		super.removeFromSuperview()
 		self.stopBounceAnimation()
@@ -111,7 +147,26 @@ class NowPlayingItemView: PKDetailView {
 	
 	override func viewDidMoveToSuperview() {
 		super.viewDidMoveToSuperview()
+		// Also called on removal: don't restart animations on a detached view
+		guard superview != nil else {
+			return
+		}
 		self.updateUIState(for: nowPLayingItem)
 	}
-    
+
+	override func viewDidMoveToWindow() {
+		super.viewDidMoveToWindow()
+		if window == nil {
+			// `ScrollingTextView` stops scrolling (after `numberOfLoop` loops) only while drawing:
+			// off screen, or once removed, its timer would keep firing forever
+			titleView.speed = 0
+			subtitleView.speed = 0
+		} else {
+			// Restart scrolling (if needed) and the bounce animation
+			set(title: titleView.text as String?)
+			set(subtitle: subtitleView.text as String?)
+			updateForNowPlayingState()
+		}
+	}
+
 }
