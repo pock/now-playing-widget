@@ -27,6 +27,7 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
     @IBOutlet private weak var animateIconWhilePlaying: NSButton!
 	@IBOutlet private weak var showMediaArtwork:		NSButton!
 	@IBOutlet private weak var invertSwipeGesture:		NSButton!
+	@IBOutlet private weak var fixedWidth:				NSButton!
     
     func reset() {
         Preferences.reset()
@@ -61,6 +62,7 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
 		animateIconWhilePlaying.state = Preferences[.animateIconWhilePlaying] ? .on : .off
 		showMediaArtwork.state 		  = Preferences[.showMediaArtwork] 	   	  ? .on : .off
 		invertSwipeGesture.state 	  = Preferences[.invertSwipeGesture] 	  ? .on : .off
+		fixedWidth.state 			  = Preferences[.fixedWidth] 			  ? .on : .off
 	}
 	
     private func setupImageViewClickGesture() {
@@ -139,6 +141,8 @@ class NowPlayingPreferencePane: NSViewController, PKWidgetPreference {
 			updateButtonsState()
 		case 3:
 			Preferences[.invertSwipeGesture] = button.state == .on
+		case 4:
+			Preferences[.fixedWidth] = button.state == .on
         default:
             return
         }
