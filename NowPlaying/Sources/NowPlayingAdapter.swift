@@ -451,6 +451,78 @@ extension NowPlayingAdapter {
 		try? process.run()
 	}
 
+	/// Chromium browsers whose tabs can run JavaScript via Apple Events (Dia only allows it when launched with
+	/// `--enable-applescript-javascript`, Chrome-like ones with View › Developer › Allow JavaScript from Apple Events).
+	/// ponytail: Chromium family only; Safari needs `do JavaScript`, add it if someone uses it.
+	internal static let javaScriptBrowsers: Set<String> = [
+		"company.thebrowser.dia", "company.thebrowser.Browser", "com.google.Chrome",
+		"com.brave.Browser", "com.microsoft.edgemac", "com.vivaldi.Vivaldi"
+	]
+
+	/// Restarts the web media playing `trackTitle` in `bundleIdentifier`, if it's more than 3 s in.
+	/// `completion` (main queue) gets `true` if the caller should go to the previous track instead.
+	///
+	/// Dia silently drops `execute javascript` calls sent back-to-back, so only one tab gets one call:
+	/// the one whose title contains the track title (web players put it there), else a YouTube Music tab.
+	internal static func restartWebMedia(in bundleIdentifier: String, trackTitle: String?, completion: @escaping (Bool) -> Void) {
+		guard javaScriptBrowsers.contains(bundleIdentifier) else {
+			completion(true)
+			return
+		}
+		let javaScript = "(function(){var l=document.querySelectorAll('video,audio'),m=null;"
+			+ "for(var i=0;i<l.length;i++){if(!l[i].paused){m=l[i];break}if(!m&&l[i].currentTime>0){m=l[i]}}"
+			+ "if(!m){return 'none'}if(m.currentTime>3){m.currentTime=0;return 'restarted'}return 'start'})()"
+		// -10006: JavaScript from Apple Events not allowed (Dia not launched with the flag)
+		let script = """
+		on run argv
+			set trackTitle to item 1 of argv
+			tell application id "\(bundleIdentifier)"
+				set target to missing value
+				set fallback to missing value
+				repeat with w in windows
+					repeat with t in tabs of w
+						if trackTitle is not "" and (title of t) contains trackTitle then
+							set target to t
+							exit repeat
+						end if
+						if fallback is missing value and (URL of t) contains "music.youtube.com" then set fallback to t
+					end repeat
+					if target is not missing value then exit repeat
+				end repeat
+				if target is missing value then set target to fallback
+				if target is missing value then return "no tab"
+				try
+					return execute target javascript "\(javaScript)"
+				on error number n
+					if n is -10006 then return "not allowed"
+					return "error " & n
+				end try
+			end tell
+		end run
+		"""
+		let process = Process()
+		let output = Pipe()
+		process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+		process.arguments = ["-e", script, trackTitle ?? ""]
+		process.standardOutput = output
+		process.standardError = FileHandle.nullDevice
+		process.terminationHandler = { _ in
+			// Dia returns JavaScript strings JSON-encoded ("restarted", with quotes)
+			let result = String(data: output.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)?
+				.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "\"")))
+			NSLog("[NOW_PLAYING]: NowPlayingAdapter - restart web media: \(result ?? "nil")")
+			DispatchQueue.main.async {
+				// Empty: Dia dropped the call, unknown if it restarted. Do nothing rather than skip a track by mistake.
+				completion(result != "restarted" && result?.isEmpty == false && result != "missing value")
+			}
+		}
+		do {
+			try process.run()
+		} catch {
+			completion(true)
+		}
+	}
+
 }
 
 // MARK: JXA script
@@ -533,6 +605,8 @@ extension NowPlayingAdapter {
 		};
 		let pending = "";
 		let last = null;
+		let spotifyArtworkTitle = null;
+		let spotifyArtworkURL = null;
 		while (true) {
 			// Blocks, without using CPU, until Pock asks for an update. Empty data means stdin was closed.
 			const data = input.availableData;
@@ -546,6 +620,16 @@ extension NowPlayingAdapter {
 			});
 			let state = null;
 			try { state = fromMediaRemote(); } catch (e) { state = null; }
+			// MediaRemote gives Spotify's artwork no URL nor data: ask Spotify, once per track
+			if (state !== null && state.bundleIdentifier === "com.spotify.client" && state.artworkURL === null
+				&& running.indexOf("com.spotify.client") >= 0) {
+				if (spotifyArtworkTitle !== state.title) {
+					spotifyArtworkTitle = state.title;
+					spotifyArtworkURL = null;
+					try { spotifyArtworkURL = Application("com.spotify.client").currentTrack.artworkUrl() || null; } catch (e) {}
+				}
+				state.artworkURL = spotifyArtworkURL;
+			}
 			for (let i = 0; state === null && i < running.length; i++) {
 				state = fromApplication(running[i]);
 			}

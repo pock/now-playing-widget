@@ -117,6 +117,9 @@ class NowPlayingHelper {
 			let wasSuppressed = self.isCurrentClientSuppressed
 			self.isCurrentClientSuppressed = resolvedClient == nil && (bundleIdentifier != nil || parentApplicationBundleIdentifier != nil)
 			self.currentNowPlayingItem?.client = resolvedClient ?? self.defaultPlayerClient()
+			if let client = resolvedClient {
+				self.rememberPlayer(client)
+			}
 			if wasSuppressed != self.isCurrentClientSuppressed {
 				// Info/state may have been fetched (or discarded) for the previous client
 				self.updateMediaContent(nil)
@@ -183,6 +186,18 @@ extension NowPlayingHelper {
 			displayName: NSWorkspace.shared.applicationName(for: customDefaultPlayerIdentifier),
 			icon: icon(for: customDefaultPlayerIdentifier)
 		)
+	}
+	
+	/// Saves the player that published media as the default one, so that nobody has to pick it in preferences:
+	/// it's the app shown (and launched on tap) while nothing is playing. Web players save their browser.
+	private func rememberPlayer(_ client: NowPlayingItem.Client) {
+		guard let identifier = client.applicationBundleIdentifier,
+			  identifier != (Preferences[.defaultPlayer] as String),
+			  NSWorkspace.shared.urlForApplication(withBundleIdentifier: identifier) != nil else {
+			return
+		}
+		NSLog("[NOW_PLAYING]: NowPlayingHelper - detected player: \(identifier)")
+		Preferences[.defaultPlayer] = identifier
 	}
 	
 	/// Returns `nil` if there is no client, if the client is in the ignored list
@@ -267,6 +282,7 @@ extension NowPlayingHelper {
 			item.album     = state.album
 			item.artist    = state.artist
 			item.isPlaying = state.isPlaying
+			rememberPlayer(client)
 			updateArtwork(embeddedData: nil, artworkURL: state.artworkURL)
 		} else {
 			item.client    = defaultPlayerClient()
@@ -291,11 +307,41 @@ extension NowPlayingHelper {
 
 extension NowPlayingHelper {
 	
+	/// `NX_KEYTYPE_*` values of the keyboard's media keys
+	private enum MediaKey: Int {
+		case play = 16, next = 17, previous = 18
+	}
+	
+	/// MediaRemote silently drops commands sent by Pock on recent macOS (seen on macOS 27, also from `osascript`).
+	/// The keyboard's media keys still work: macOS routes them to the app playing now (any player, browsers included).
+	/// Posting them needs Pock in System Settings › Privacy & Security › Accessibility.
+	private func sendMediaCommand(_ command: MRCommand, key: MediaKey) {
+		guard NowPlayingAdapter.isRequired else {
+			MRMediaRemoteSendCommand(command, nil)
+			return
+		}
+		if AXIsProcessTrusted() == false {
+			NSLog("[NOW_PLAYING]: NowPlayingHelper - Pock is not trusted for Accessibility, media keys will be ignored")
+		}
+		for isDown in [true, false] {
+			let event = NSEvent.otherEvent(with: .systemDefined,
+										   location: .zero,
+										   modifierFlags: NSEvent.ModifierFlags(rawValue: isDown ? 0xa00 : 0xb00),
+										   timestamp: 0,
+										   windowNumber: 0,
+										   context: nil,
+										   subtype: 8,
+										   data1: (key.rawValue << 16) | ((isDown ? 0xa : 0xb) << 8),
+										   data2: -1)
+			event?.cgEvent?.post(tap: .cghidEventTap)
+		}
+	}
+	
 	public func togglePlayingState() {
 		if let bundleIdentifier = appleScriptControlledBundleIdentifier {
 			NowPlayingAdapter.send(.playPause, to: bundleIdentifier)
 		} else {
-			MRMediaRemoteSendCommand(kMRTogglePlayPause, nil)
+			sendMediaCommand(kMRTogglePlayPause, key: .play)
 		}
 		adapter?.setNeedsUpdate()
 	}
@@ -304,7 +350,7 @@ extension NowPlayingHelper {
 		if let bundleIdentifier = appleScriptControlledBundleIdentifier {
 			NowPlayingAdapter.send(.nextTrack, to: bundleIdentifier)
 		} else {
-			MRMediaRemoteSendCommand(kMRNextTrack, nil)
+			sendMediaCommand(kMRNextTrack, key: .next)
 		}
 		adapter?.setNeedsUpdate()
 	}
@@ -312,10 +358,18 @@ extension NowPlayingHelper {
 	public func skipToPreviousTrack() {
 		if let bundleIdentifier = appleScriptControlledBundleIdentifier {
 			NowPlayingAdapter.send(.previousTrack, to: bundleIdentifier)
-		} else {
-			MRMediaRemoteSendCommand(kMRPreviousTrack, nil)
+			adapter?.setNeedsUpdate()
+			return
 		}
-		adapter?.setNeedsUpdate()
+		// Native players restart the track themselves, web players jump straight to the previous one:
+		// restart it first (more than 3 s in), like a CD player.
+		NowPlayingAdapter.restartWebMedia(in: currentNowPlayingItem?.client?.applicationBundleIdentifier ?? "",
+										  trackTitle: currentNowPlayingItem?.title) { [weak self] goToPreviousTrack in
+			if goToPreviousTrack {
+				self?.sendMediaCommand(kMRPreviousTrack, key: .previous)
+			}
+			self?.adapter?.setNeedsUpdate()
+		}
 	}
 	
 }

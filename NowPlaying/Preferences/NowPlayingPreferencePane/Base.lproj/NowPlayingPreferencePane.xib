@@ -33,7 +33,7 @@
                     <subviews>
                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="txt-mr-QM1">
                             <rect key="frame" x="-2" y="415" width="162" height="16"/>
-                            <textFieldCell key="cell" lineBreakMode="clipping" title="Default media application:" id="Ncc-8f-mAY">
+                            <textFieldCell key="cell" lineBreakMode="clipping" title="Media application (detected automatically, used when nothing plays):" id="Ncc-8f-mAY">
                                 <font key="font" metaFont="system"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
