@@ -86,6 +86,12 @@ class NowPlayingView: PKView {
 			registerForNotifications()
 		}
 	}
+	
+	/// Views are in a window only while shown in the Touch Bar
+	override func viewDidMoveToWindow() {
+		super.viewDidMoveToWindow()
+		helper?.isOnScreen = window != nil
+	}
     
     /// Configuration
     private func configureStackView() {
@@ -100,6 +106,8 @@ class NowPlayingView: PKView {
         removeArrangedSubviews()
 		defer {
 			addArrangedSubviews()
+			// A new item view shows the default player until updated
+			itemView?.updateUIState(for: item)
 		}
         switch style {
         case .default, .onlyInfo:
@@ -182,7 +190,8 @@ class NowPlayingView: PKView {
     
     /// Handlers
     @objc private func togglePlayPause() {
-		if NSWorkspace.shared.runningApplications.compactMap({ $0.bundleIdentifier }).contains(item?.client.bundleIdentifier), item?.title != nil {
+		if let identifier = item?.client?.applicationBundleIdentifier, item?.title != nil,
+		   NSRunningApplication.runningApplications(withBundleIdentifier: identifier).isEmpty == false {
 			helper?.togglePlayingState()
 		} else {
 			didLongPressHandler()
@@ -198,7 +207,7 @@ class NowPlayingView: PKView {
     }
     
     override func didLongPressHandler() {
-		guard let id = item?.client?.bundleIdentifier else {
+		guard let id = item?.client?.applicationBundleIdentifier else {
             return
         }
         NSWorkspace.shared.launchApplication(

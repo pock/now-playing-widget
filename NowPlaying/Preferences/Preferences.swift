@@ -16,7 +16,11 @@ internal struct Preferences {
 		case showMediaArtwork
 		case invertSwipeGesture
 		case defaultPlayer
+		case fixedWidth = "nowPlayingFixedWidth"
+		case ignoredPlayers = "nowPlayingIgnoredPlayers"
 	}
+	/// Apps that publish "now playing" info for things that are not media (e.g. Microsoft Teams call sounds)
+	internal static let defaultIgnoredPlayers: [String] = ["com.microsoft.teams", "com.microsoft.teams2"]
 	static subscript<T>(_ key: Keys) -> T {
 		get {
 			guard let value = UserDefaults.standard.value(forKey: key.rawValue) as? T else {
@@ -37,6 +41,10 @@ internal struct Preferences {
 					} else {
 						return "com.apple.iTunes" as! T
 					}
+				case .fixedWidth:
+					return false as! T
+				case .ignoredPlayers:
+					return defaultIgnoredPlayers as! T
 				}
 			}
 			return value
@@ -51,6 +59,8 @@ internal struct Preferences {
         Preferences[.animateIconWhilePlaying] = true
         Preferences[.showMediaArtwork] = false
         Preferences[.invertSwipeGesture] = true
+        Preferences[.fixedWidth] = false
+        Preferences[.ignoredPlayers] = defaultIgnoredPlayers
         if #available(OSX 10.15, *) {
             Preferences[.defaultPlayer] = "com.apple.Music"
         } else {
